@@ -1,0 +1,18 @@
+{
+  "name": "samdev-pulse",
+  "version": "1.0.0",
+  "description": "The perfect README generator for GitHub profiles",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "keywords": ["github", "readme", "profile", "svg"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
+
