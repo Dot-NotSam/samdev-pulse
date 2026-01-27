@@ -1,3 +1,5 @@
+// TTL-based in-memory cache
+
 class Cache {
   constructor(defaultTTL = 300000) {
     // Default TTL: 5 minutes (in milliseconds)
@@ -32,6 +34,33 @@ class Cache {
     this.store.set(key, { value, expiresAt });
   }
 
+  /**
+   * Check if key exists and is not expired
+   */
+  has(key) {
+    return this.get(key) !== null;
+  }
+
+  /**
+   * Delete a key from cache
+   */
+  delete(key) {
+    this.store.delete(key);
+  }
+
+  /**
+   * Clear all entries from cache
+   */
+  clear() {
+    this.store.clear();
+  }
+
+  /**
+   * Get cache size
+   */
+  size() {
+    return this.store.size;
+  }
 }
 
 // Singleton instance for GitHub data cache (5 minute TTL)
