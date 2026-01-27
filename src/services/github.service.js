@@ -73,6 +73,40 @@ function calculateTotalStars(repos) {
   return repos.reduce((total, repo) => total + (repo.stargazers_count || 0), 0);
 }
 
+/**
+ * Normalize GitHub data into a clean object
+ */
+function normalizeUserData(profile, repos) {
+  const totalStars = calculateTotalStars(repos);
+
+  return {
+    username: profile.login,
+    name: profile.name || profile.login,
+    avatarUrl: profile.avatar_url,
+    bio: profile.bio || '',
+    location: profile.location || '',
+    company: profile.company || '',
+    blog: profile.blog || '',
+    publicRepos: profile.public_repos,
+    followers: profile.followers,
+    following: profile.following,
+    createdAt: profile.created_at,
+    totalStars,
+    repos: repos.map((repo) => ({
+      name: repo.name,
+      description: repo.description || '',
+      stars: repo.stargazers_count,
+      forks: repo.forks_count,
+      language: repo.language,
+      url: repo.html_url,
+      updatedAt: repo.updated_at,
+    })),
+  };
+}
+
+/**
+ * Fetch and normalize all GitHub data for a user
+ */
 export async function getGitHubUserData(username) {
   // Check cache first
   const cached = githubCache.get(username);
