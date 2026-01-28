@@ -49,6 +49,58 @@ function scaleData(data, width, height, padding) {
 }
 
 /**
+ * Render a line/area chart
+ */
+export function renderLineChart({ x, y, width, height, data, showArea = true, showLine = true, showDots = false }) {
+  const { colors } = currentTheme;
+  const padding = 8;
+
+  const points = scaleData(data, width, height, padding);
+  const pathD = smoothPath(points);
+
+  let elements = [];
+
+  // Area fill
+  if (showArea && points.length > 1) {
+    const areaPath = `${pathD} L ${points[points.length - 1].x} ${height - padding} L ${points[0].x} ${height - padding} Z`;
+    elements.push(
+      `<path d="${areaPath}" fill="url(#areaGradient-${x}-${y})" opacity="0.3"/>`
+    );
+  }
+
+  // Line stroke
+  if (showLine && pathD) {
+    elements.push(
+      `<path d="${pathD}" fill="none" stroke="${colors.accent}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`
+    );
+  }
+
+  // Dots at data points
+  if (showDots) {
+    points.forEach((point) => {
+      elements.push(
+        `<circle cx="${point.x}" cy="${point.y}" r="3" fill="${colors.accent}"/>`
+      );
+    });
+  }
+
+  // Gradient definition
+  const gradient = `
+    <defs>
+      <linearGradient id="areaGradient-${x}-${y}" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="${colors.accent}" stop-opacity="0.4"/>
+        <stop offset="100%" stop-color="${colors.accent}" stop-opacity="0"/>
+      </linearGradient>
+    </defs>`;
+
+  return `
+  <g transform="translate(${x}, ${y})">
+    ${gradient}
+    ${elements.join('\n    ')}
+  </g>`;
+}
+
+/**
  * Generate fake contribution data
  */
 export function generateFakeContributionData(days = 30) {
