@@ -1,3 +1,4 @@
+// SVG Layout System - Reusable rendering utilities
 
 import darkTheme from '../themes/dark.theme.js';
 
@@ -104,4 +105,15 @@ export function calculateCardWidth(numCards) {
 export function calculateCardX(index, cardWidth) {
   return LAYOUT.padding + (index * (cardWidth + LAYOUT.cardGap));
 }
+
+/**
+ * Wrap content in SVG root element
+ */
+export function wrapSvg(content, width, height) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+${content}
+</svg>`;
+}
+
+export { LAYOUT };
 
