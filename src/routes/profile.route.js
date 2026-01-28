@@ -81,6 +81,10 @@ router.get('/', async (req, res) => {
   // Generate fake contribution data
   const contributionData = generateFakeContributionData(30);
 
+  // Build SVG content
+  const content = [
+    renderBackground(width, height),
+    renderHeader({ x: LAYOUT.padding, y: 48, title: `${data.name}'s Dashboard` }),
 });
 
 export default router;
