@@ -31,3 +31,19 @@ function smoothPath(points) {
   return path;
 }
 
+/**
+ * Generate fake contribution data
+ */
+export function generateFakeContributionData(days = 30) {
+  const data = [];
+  let base = 5;
+
+  for (let i = 0; i < days; i++) {
+    base += Math.floor(Math.random() * 7) - 3;
+    base = Math.max(0, Math.min(20, base));
+    data.push(base);
+  }
+
+  return data;
+}
+
