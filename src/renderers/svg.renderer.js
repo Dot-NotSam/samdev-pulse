@@ -28,6 +28,33 @@ export function renderBackground(width, height) {
 }
 
 /**
+ * Render a card container with title
+ */
+export function renderCard({ x, y, width, height, title }) {
+  const { colors } = currentTheme;
+  const titleY = y + 24;
+
+  return `
+  <g>
+    <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="${colors.cardBackground}" stroke="${colors.border}" stroke-width="1"/>
+    <text x="${x + 16}" y="${titleY}" font-family="Segoe UI, Ubuntu, sans-serif" font-size="14" font-weight="600" fill="${colors.secondaryText}">${title}</text>
+  </g>`;
+}
+
+/**
+ * Render a single stat item (label + value)
+ */
+export function renderStatItem({ x, y, label, value }) {
+  const { colors } = currentTheme;
+
+  return `
+  <g>
+    <text x="${x}" y="${y}" font-family="Segoe UI, Ubuntu, sans-serif" font-size="28" font-weight="700" fill="${colors.primaryText}">${value}</text>
+    <text x="${x}" y="${y + 22}" font-family="Segoe UI, Ubuntu, sans-serif" font-size="12" fill="${colors.secondaryText}">${label}</text>
+  </g>`;
+}
+
+/**
  * Calculate card width for a row with n cards
  */
 export function calculateCardWidth(numCards) {
