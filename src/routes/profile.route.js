@@ -8,6 +8,7 @@ import {
   wrapSvg,
   setTheme,
   LAYOUT,
+  renderTrophyRow,
 } from '../renderers/svg.renderer.js';
 import { renderContributionChart, generateFakeContributionData, renderDonutChart } from '../renderers/chart.renderer.js';
 import { getGitHubUserData } from '../services/github.service.js';
@@ -85,7 +86,7 @@ router.get('/', async (req, res) => {
   const leetcodeData = leetcodeResult?.success ? leetcodeResult.data : null;
 
   const width = LAYOUT.width;
-  const height = 480;
+  const height = 620; // Increased to fit trophy row
 
   // Row 1: Three stat cards
   const cardWidth = calculateCardWidth(3);
@@ -98,22 +99,32 @@ router.get('/', async (req, res) => {
   const row2CardWidth = calculateCardWidth(2) - LAYOUT.cardGap / 2;
   const row2Height = 200;
 
-  // When LeetCode is disabled, we swap Card 1 and Card 3 to show Contributions first
-  let card1Title;
-  let card1Stats;
+  // Row 3: Trophy row
+  const row3Y = row2Y + row2Height + LAYOUT.cardGap;
+  const row3Height = 165;
+  const fullWidth = width - (LAYOUT.padding * 2);
+
+  // Card 1: GitHub Activity - ALWAYS Card 1
+  const card1Title = 'GitHub Activity';
+  const card1Stats = [
+    { label: 'Contributions', value: contributionData ? formatNumber(contributionData.totalContributions) : '-' },
+    { label: 'PRs Opened', value: contributionData ? formatNumber(contributionData.totalPRs) : '-' },
+    { label: 'Issues Opened', value: contributionData ? formatNumber(contributionData.totalIssues) : '-' },
+  ];
+
+  // Card 2: Streak Stats (real data from GraphQL) - ALWAYS Card 2
+  const streakStats = [
+    { label: 'Current', value: contributionData ? formatNumber(contributionData.currentStreak) : '-' },
+    { label: 'Longest', value: contributionData ? formatNumber(contributionData.longestStreak) : '-' },
+    { label: 'Total', value: contributionData ? formatNumber(contributionData.totalContributionDays) : '-' },
+  ];
+
+  // Card 3: Changes based on leetcode parameter
   let card3Title;
   let card3Stats;
 
   if (leetcodeDisabled) {
-    // Card 1: GitHub Activity (show Contributions prominently)
-    card1Title = 'GitHub Activity';
-    card1Stats = [
-      { label: 'Contributions', value: contributionData ? formatNumber(contributionData.totalContributions) : '-' },
-      { label: 'PRs Opened', value: contributionData ? formatNumber(contributionData.totalPRs) : '-' },
-      { label: 'Issues Opened', value: contributionData ? formatNumber(contributionData.totalIssues) : '-' },
-    ];
-
-    // Card 3: Repository Stats (repos, stars, forks)
+    // When leetcode=false: Show Repository Stats
     card3Title = 'Repository Stats';
     card3Stats = [
       { label: 'Repositories', value: formatNumber(data.publicRepos) },
@@ -121,24 +132,7 @@ router.get('/', async (req, res) => {
       { label: 'Followers', value: formatNumber(data.followers) },
     ];
   } else {
-    // Card 1: GitHub Stats (commits, PRs, issues) - when LeetCode is enabled
-    card1Title = 'GitHub Stats';
-    card1Stats = [
-      { label: 'Commits', value: contributionData ? formatNumber(contributionData.totalCommits) : formatNumber(0) },
-      { label: 'PRs Merged', value: contributionData ? formatNumber(contributionData.prsMerged) : '-' },
-      { label: 'Issues', value: contributionData ? formatNumber(contributionData.issuesClosed) : '-' },
-    ];
-  }
-
-  // Card 2: Streak Stats (real data from GraphQL) - always the same
-  const streakStats = [
-    { label: 'Current', value: contributionData ? formatNumber(contributionData.currentStreak) : '-' },
-    { label: 'Longest', value: contributionData ? formatNumber(contributionData.longestStreak) : '-' },
-    { label: 'Total', value: contributionData ? formatNumber(contributionData.totalContributionDays) : '-' },
-  ];
-
-  // Card 3: LeetCode stats (only when leetcode is NOT disabled)
-  if (!leetcodeDisabled) {
+    // When leetcode is enabled: Show LeetCode stats
     // LeetCode or Competitive Coding stats
     // Use rating if available (show full number), otherwise fall back to ranking
     const getRatingOrRanking = () => {
@@ -184,6 +178,17 @@ router.get('/', async (req, res) => {
   // Calculate top languages from repos
   const topLanguages = getTopLanguages(data.repos, 5);
 
+  // Trophy data
+  const trophyData = {
+    commits: contributionData?.totalContributions || 0,
+    prs: contributionData?.totalPRs || 0,
+    issues: contributionData?.totalIssues || 0,
+    repos: data.publicRepos || 0,
+    stars: data.totalStars || 0,
+    followers: data.followers || 0,
+  };
+
+
   // Build SVG content
   const content = [
     renderBackground(width, height),
@@ -207,6 +212,9 @@ router.get('/', async (req, res) => {
     renderContributionChart({ x: LAYOUT.padding, y: row2Y, width: chartWidth, height: row2Height, title: 'Contribution Activity', data: chartData }),
 
     renderDonutChart({ x: LAYOUT.padding + chartWidth + LAYOUT.cardGap, y: row2Y, width: row2CardWidth, height: row2Height, title: 'Top Languages', data: topLanguages }),
+
+    // Row 3: Trophy row
+    renderTrophyRow({ x: LAYOUT.padding, y: row3Y, width: fullWidth, height: row3Height, data: trophyData }),
   ].join('\n');
 
   const svg = wrapSvg(content, width, height);
