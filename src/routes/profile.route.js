@@ -6,12 +6,18 @@ import {
   calculateCardWidth,
   calculateCardX,
   wrapSvg,
+  setTheme,
   LAYOUT,
 } from '../renderers/svg.renderer.js';
-import { renderContributionChart, generateFakeContributionData } from '../renderers/chart.renderer.js';
+import { renderContributionChart, generateFakeContributionData, renderDonutChart } from '../renderers/chart.renderer.js';
 import { getGitHubUserData } from '../services/github.service.js';
+import { getContributionData } from '../services/github-graphql.service.js';
+import { getLeetCodeData } from '../services/leetcode.service.js';
 
 const router = Router();
+
+// Default fallback username for demo purposes
+const DEFAULT_USERNAME = process.env.DEFAULT_USERNAME || 'octocat';
 
 /**
  * Format large numbers (e.g., 1500 -> 1.5k)
@@ -42,6 +48,14 @@ router.get('/', async (req, res) => {
   }
 
   const { data } = result;
+
+  // Fetch contribution data for streaks (non-blocking)
+  const contributionResult = await getContributionData(username);
+  const contributionData = contributionResult.success ? contributionResult.data : null;
+
+  // Fetch LeetCode data if username provided (non-blocking)
+  const leetcodeResult = leetcode ? await getLeetCodeData(leetcode) : null;
+  const leetcodeData = leetcodeResult?.success ? leetcodeResult.data : null;
 
   const width = LAYOUT.width;
   const height = 480;
