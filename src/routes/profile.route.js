@@ -102,14 +102,36 @@ router.get('/', async (req, res) => {
   const streakStats = [
     { label: 'Current', value: contributionData ? formatNumber(contributionData.currentStreak) : '-' },
     { label: 'Longest', value: contributionData ? formatNumber(contributionData.longestStreak) : '-' },
-    { label: 'Total Days', value: contributionData ? formatNumber(contributionData.totalContributionDays) : '-' },
+    { label: 'Total', value: contributionData ? formatNumber(contributionData.totalContributionDays) : '-' },
   ];
 
   // Card 3: Competitive Coding (LeetCode data or placeholder)
+  // Use rating if available (show full number), otherwise fall back to ranking
+  const getRatingOrRanking = () => {
+    if (!leetcodeData) return { label: 'Rating', value: '-' };
+    if (leetcodeData.contestRating) {
+      // Show full rating number, not abbreviated
+      return { label: 'Rating', value: String(leetcodeData.contestRating) };
+    }
+    return { label: 'Rank', value: formatNumber(leetcodeData.ranking) };
+  };
+
+  // E/M/H as vertical layout object
+  const getEMHStats = () => {
+    if (!leetcodeData) return { label: 'E/M/H', value: '-', isVertical: false };
+    return {
+      label: 'E/M/H',
+      isVertical: true,
+      easy: leetcodeData.easySolved,
+      medium: leetcodeData.mediumSolved,
+      hard: leetcodeData.hardSolved,
+    };
+  };
+
   const codingStats = [
-    { label: 'Problems', value: leetcodeData ? formatNumber(leetcodeData.totalSolved) : '-' },
-    { label: 'Easy/Med/Hard', value: leetcodeData ? `${leetcodeData.easySolved}/${leetcodeData.mediumSolved}/${leetcodeData.hardSolved}` : '-' },
-    { label: 'Ranking', value: leetcodeData ? formatNumber(leetcodeData.ranking) : '-' },
+    { label: 'Solved', value: leetcodeData ? formatNumber(leetcodeData.totalSolved) : '-' },
+    getEMHStats(),
+    getRatingOrRanking(),
   ];
 
   // Use real contribution data for chart (last 30 days), fallback to fake data if unavailable
