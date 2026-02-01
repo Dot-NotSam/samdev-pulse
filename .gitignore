@@ -1,3 +1,29 @@
-/node_modules
+# Dependencies
+node_modules/
+
+# Environment files
 .env
 .env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Test output
+*.svg
+!public/*.svg
+
+# Vercel
+.vercel
+
