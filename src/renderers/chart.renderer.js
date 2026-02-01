@@ -1,11 +1,10 @@
-// Chart Renderer - Reusable SVG chart components
+// Chart Renderer - Premium Modern Design
 
-import { getTheme } from './svg.renderer.js';
+import { getTheme, LAYOUT } from './svg.renderer.js';
 
 /**
  * Generate a smooth SVG path using cardinal spline interpolation
  */
-
 function smoothPath(points) {
   if (points.length < 2) return '';
 
@@ -43,93 +42,150 @@ function scaleData(data, width, height, padding) {
   return data.map((val, i) => ({
     x: padding + (i / (data.length - 1)) * chartWidth,
     y: padding + chartHeight - ((val - minVal) / range) * chartHeight,
+    value: val,
   }));
 }
 
 /**
- * Render a line/area chart
+ * Render a modern line/area chart with glow effects
  */
-export function renderLineChart({ x, y, width, height, data, showArea = true, showLine = true, showDots = false }) {
+export function renderLineChart({ x, y, width, height, data, showArea = true, showLine = true, showDots = false, uniqueId }) {
   const { colors } = getTheme();
-  const padding = 8;
+  const padding = 12;
+  const id = uniqueId || `chart-${x}-${y}`;
 
   const points = scaleData(data, width, height, padding);
   const pathD = smoothPath(points);
 
   let elements = [];
 
-  // Area fill
+  // Gradient definitions for this chart
+  elements.push(`
+    <defs>
+      <linearGradient id="lineGradient-${id}" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="${colors.gradientStart}"/>
+        <stop offset="50%" stop-color="${colors.gradientMid}"/>
+        <stop offset="100%" stop-color="${colors.gradientEnd}"/>
+      </linearGradient>
+      <linearGradient id="areaGradient-${id}" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="${colors.accent}" stop-opacity="0.4"/>
+        <stop offset="50%" stop-color="${colors.accentSecondary}" stop-opacity="0.2"/>
+        <stop offset="100%" stop-color="${colors.accent}" stop-opacity="0"/>
+      </linearGradient>
+      <filter id="lineGlow-${id}" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="3" result="blur"/>
+        <feMerge>
+          <feMergeNode in="blur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+    </defs>
+  `);
+
+  // Subtle grid lines
+  const gridLines = [];
+  for (let i = 0; i <= 4; i++) {
+    const lineY = padding + (i / 4) * (height - padding * 2);
+    gridLines.push(`<line x1="${padding}" y1="${lineY}" x2="${width - padding}" y2="${lineY}" stroke="${colors.border}" stroke-width="1" opacity="0.3" stroke-dasharray="4 4"/>`);
+  }
+  elements.push(gridLines.join('\n'));
+
+  // Area fill with gradient
   if (showArea && points.length > 1) {
     const areaPath = `${pathD} L ${points[points.length - 1].x} ${height - padding} L ${points[0].x} ${height - padding} Z`;
-    elements.push(
-      `<path d="${areaPath}" fill="url(#areaGradient-${x}-${y})" opacity="0.3"/>`
-    );
+    elements.push(`<path d="${areaPath}" fill="url(#areaGradient-${id})"/>`);
   }
 
-  // Line stroke
+  // Line stroke with glow
   if (showLine && pathD) {
-    elements.push(
-      `<path d="${pathD}" fill="none" stroke="${colors.accent}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`
-    );
+    // Glow layer
+    elements.push(`<path d="${pathD}" fill="none" stroke="url(#lineGradient-${id})" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.4" filter="url(#lineGlow-${id})"/>`);
+    // Main line
+    elements.push(`<path d="${pathD}" fill="none" stroke="url(#lineGradient-${id})" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`);
   }
 
-  // Dots at data points
-  if (showDots) {
-    points.forEach((point) => {
-      elements.push(
-        `<circle cx="${point.x}" cy="${point.y}" r="3" fill="${colors.accent}"/>`
-      );
+  // Dots at data points with glow
+  if (showDots && points.length <= 15) {
+    points.forEach((point, i) => {
+      const dotColor = i === points.length - 1 ? colors.gradientEnd : colors.gradientStart;
+      elements.push(`
+        <circle cx="${point.x}" cy="${point.y}" r="5" fill="${dotColor}" opacity="0.3" filter="url(#lineGlow-${id})"/>
+        <circle cx="${point.x}" cy="${point.y}" r="3" fill="${dotColor}"/>
+        <circle cx="${point.x}" cy="${point.y}" r="1.5" fill="#fff" opacity="0.8"/>
+      `);
     });
   }
 
-  // Gradient definition
-  const gradient = `
-    <defs>
-      <linearGradient id="areaGradient-${x}-${y}" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="${colors.accent}" stop-opacity="0.4"/>
-        <stop offset="100%" stop-color="${colors.accent}" stop-opacity="0"/>
-      </linearGradient>
-    </defs>`;
+  // End point highlight
+  if (points.length > 0) {
+    const lastPoint = points[points.length - 1];
+    elements.push(`
+      <circle cx="${lastPoint.x}" cy="${lastPoint.y}" r="6" fill="${colors.gradientEnd}" opacity="0.3"/>
+      <circle cx="${lastPoint.x}" cy="${lastPoint.y}" r="4" fill="${colors.gradientEnd}"/>
+      <circle cx="${lastPoint.x}" cy="${lastPoint.y}" r="2" fill="#fff" opacity="0.9"/>
+    `);
+  }
 
   return `
   <g transform="translate(${x}, ${y})">
-    ${gradient}
     ${elements.join('\n    ')}
   </g>`;
 }
 
 /**
- * Render a contribution chart card
+ * Render a modern contribution chart card
  */
 export function renderContributionChart({ x, y, width, height, title, data }) {
   const { colors } = getTheme();
-  const titleY = y + 24;
   const chartX = 0;
-  const chartY = 36;
-  const chartWidth = width - 32;
-  const chartHeight = height - 52;
+  const chartY = 44;
+  const chartWidth = width - 40;
+  const chartHeight = height - 64;
 
   return `
   <g>
-    <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="12" ry="12" fill="${colors.cardBackground}" stroke="${colors.border}" stroke-width="1"/>
-    <text x="${x + 16}" y="${titleY}" font-family="Segoe UI, Ubuntu, sans-serif" font-size="14" font-weight="600" fill="${colors.secondaryText}">${title}</text>
-    <g transform="translate(${x + 16}, ${y})">
-      ${renderLineChart({ x: chartX, y: chartY, width: chartWidth, height: chartHeight, data, showArea: true, showLine: true, showDots: false })}
+    <!-- Card glow -->
+    <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="${colors.glow}" opacity="0.03" filter="url(#cardGlow)"/>
+    
+    <!-- Card background -->
+    <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="${colors.cardBackground}"/>
+    
+    <!-- Inner gradient -->
+    <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="url(#mainGradient)" opacity="0.3"/>
+    
+    <!-- Border -->
+    <rect x="${x + 0.5}" y="${y + 0.5}" width="${width - 1}" height="${height - 1}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="none" stroke="${colors.borderLight}" stroke-width="1" opacity="0.4"/>
+    
+    <!-- Title -->
+    <text x="${x + 20}" y="${y + 28}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" font-weight="600" fill="${colors.secondaryText}" letter-spacing="0.5">${title.toUpperCase()}</text>
+    
+    <!-- Title accent -->
+    <rect x="${x + 20}" y="${y + 36}" width="28" height="2" rx="1" fill="url(#accentGradient)" opacity="0.7"/>
+    
+    <!-- Chart -->
+    <g transform="translate(${x + 20}, ${y})">
+      ${renderLineChart({ x: chartX, y: chartY, width: chartWidth, height: chartHeight, data, showArea: true, showLine: true, showDots: false, uniqueId: 'contrib' })}
     </g>
   </g>`;
 }
 
 /**
- * Generate fake contribution data
+ * Generate fake contribution data with realistic pattern
  */
 export function generateFakeContributionData(days = 30) {
   const data = [];
-  let base = 5;
+  let base = 8;
+  const weekPattern = [0.3, 0.7, 1.0, 1.2, 1.0, 0.5, 0.2];
 
   for (let i = 0; i < days; i++) {
-    base += Math.floor(Math.random() * 7) - 3;
-    base = Math.max(0, Math.min(20, base));
-    data.push(base);
+    const dayOfWeek = i % 7;
+    const weekMultiplier = weekPattern[dayOfWeek];
+    const randomVariation = Math.floor(Math.random() * 8) - 3;
+    const trend = Math.sin(i / 5) * 3;
+
+    base = Math.max(1, Math.min(20, base + randomVariation * 0.3));
+    const value = Math.max(0, Math.floor(base * weekMultiplier + trend));
+    data.push(value);
   }
 
   return data;
@@ -139,7 +195,7 @@ export function generateFakeContributionData(days = 30) {
  * Create an SVG arc path for a donut slice
  */
 function describeArc(cx, cy, outerR, innerR, startAngle, endAngle) {
-  const gap = 0.02; // Small gap between slices in radians
+  const gap = 0.03;
   const adjustedStart = startAngle + gap;
   const adjustedEnd = endAngle - gap;
 
@@ -176,66 +232,91 @@ function describeArc(cx, cy, outerR, innerR, startAngle, endAngle) {
 }
 
 /**
- * Render a donut chart with legend
- * @param {Object} options
- * @param {number} options.x - X position
- * @param {number} options.y - Y position
- * @param {number} options.width - Width of the card
- * @param {number} options.height - Height of the card
- * @param {string} options.title - Card title
- * @param {Array} options.data - Array of { label, value, percentage }
+ * Render a modern donut chart with legend
  */
 export function renderDonutChart({ x, y, width, height, title, data }) {
   const { colors, chartColors } = getTheme();
-  const titleY = y + 24;
 
   // Donut dimensions
-  const chartAreaWidth = width * 0.45;
-  const centerX = x + chartAreaWidth / 2 + 16;
-  const centerY = y + height / 2 + 10;
-  const outerRadius = Math.min(chartAreaWidth, height - 60) / 2 - 8;
-  const innerRadius = outerRadius * 0.55;
+  const chartAreaWidth = width * 0.42;
+  const centerX = x + chartAreaWidth / 2 + 20;
+  const centerY = y + height / 2 + 12;
+  const outerRadius = Math.min(chartAreaWidth, height - 70) / 2 - 4;
+  const innerRadius = outerRadius * 0.62;
 
   // Calculate total for percentages
   const total = data.reduce((sum, item) => sum + item.value, 0);
 
-  // Build pie slices
-  let currentAngle = -Math.PI / 2; // Start from top
+  // Build pie slices with shadows
+  let currentAngle = -Math.PI / 2;
   const slices = [];
 
   data.forEach((item, i) => {
     const sliceAngle = (item.value / total) * Math.PI * 2;
     const path = describeArc(centerX, centerY, outerRadius, innerRadius, currentAngle, currentAngle + sliceAngle);
+    const color = chartColors[i % chartColors.length];
 
     if (path) {
-      slices.push(`<path d="${path}" fill="${chartColors[i % chartColors.length]}" />`);
+      slices.push(`<path d="${path}" fill="${color}" opacity="0.2" filter="url(#softGlow)"/>`);
+      slices.push(`<path d="${path}" fill="${color}" />`);
     }
 
     currentAngle += sliceAngle;
   });
 
-  // Build legend
-  const legendX = x + chartAreaWidth + 24;
-  const legendStartY = y + 50;
-  const legendItemHeight = 24;
+  // Center decoration
+  const centerDeco = `
+    <circle cx="${centerX}" cy="${centerY}" r="${innerRadius - 4}" fill="${colors.cardBackground}" opacity="0.9"/>
+    <circle cx="${centerX}" cy="${centerY}" r="${innerRadius - 8}" fill="url(#mainGradient)" opacity="0.5"/>
+    <text x="${centerX}" y="${centerY + 4}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="16" font-weight="700" fill="${colors.primaryText}" text-anchor="middle">${total}</text>
+    <text x="${centerX}" y="${centerY + 18}" font-family="'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="9" fill="${colors.mutedText}" text-anchor="middle">REPOS</text>
+  `;
+
+  // Build legend with modern styling
+  const legendX = x + chartAreaWidth + 32;
+  const legendStartY = y + 56;
+  const legendItemHeight = 28;
 
   const legendItems = data.map((item, i) => {
     const itemY = legendStartY + i * legendItemHeight;
-    const percentage = ((item.value / total) * 100).toFixed(1);
+    const percentage = ((item.value / total) * 100).toFixed(0);
+    const color = chartColors[i % chartColors.length];
 
     return `
-      <circle cx="${legendX}" cy="${itemY}" r="5" fill="${chartColors[i % chartColors.length]}"/>
-      <text x="${legendX + 14}" y="${itemY + 4}" font-family="Segoe UI, Ubuntu, sans-serif" font-size="12" fill="${colors.primaryText}">${item.label}</text>
-      <text x="${legendX + 14}" y="${itemY + 16}" font-family="Segoe UI, Ubuntu, sans-serif" font-size="10" fill="${colors.secondaryText}">${percentage}%</text>
+      <g>
+        <rect x="${legendX - 2}" y="${itemY - 8}" width="${width - chartAreaWidth - 50}" height="24" rx="6" fill="${color}" opacity="0.08"/>
+        <circle cx="${legendX + 6}" cy="${itemY + 4}" r="4" fill="${color}"/>
+        <text x="${legendX + 18}" y="${itemY + 8}" font-family="'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="500" fill="${colors.primaryText}">${item.label}</text>
+        <text x="${x + width - 24}" y="${itemY + 8}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="600" fill="${color}" text-anchor="end">${percentage}%</text>
+      </g>
     `;
   }).join('');
 
   return `
   <g>
-    <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="12" ry="12" fill="${colors.cardBackground}" stroke="${colors.border}" stroke-width="1"/>
-    <text x="${x + 16}" y="${titleY}" font-family="Segoe UI, Ubuntu, sans-serif" font-size="14" font-weight="600" fill="${colors.secondaryText}">${title}</text>
+    <!-- Card glow -->
+    <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="${colors.glowSecondary}" opacity="0.03" filter="url(#cardGlow)"/>
+    
+    <!-- Card background -->
+    <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="${colors.cardBackground}"/>
+    
+    <!-- Inner gradient -->
+    <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="url(#mainGradient)" opacity="0.3"/>
+    
+    <!-- Border -->
+    <rect x="${x + 0.5}" y="${y + 0.5}" width="${width - 1}" height="${height - 1}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="none" stroke="${colors.borderLight}" stroke-width="1" opacity="0.4"/>
+    
+    <!-- Title -->
+    <text x="${x + 20}" y="${y + 28}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" font-weight="600" fill="${colors.secondaryText}" letter-spacing="0.5">${title.toUpperCase()}</text>
+    
+    <!-- Title accent -->
+    <rect x="${x + 20}" y="${y + 36}" width="28" height="2" rx="1" fill="url(#accentGradient)" opacity="0.7"/>
+    
+    <!-- Donut chart -->
     ${slices.join('\n    ')}
+    ${centerDeco}
+    
+    <!-- Legend -->
     ${legendItems}
   </g>`;
 }
-
