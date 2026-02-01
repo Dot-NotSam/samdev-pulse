@@ -150,6 +150,13 @@ export function renderStatItem({ x, y, label, value, icon, accentColor, showProg
   const { colors } = currentTheme;
   const accent = accentColor || colors.accent;
 
+  // Dynamic font size based on value length
+  const valueStr = String(value);
+  let fontSize = 32;
+  if (valueStr.length > 10) fontSize = 18;
+  else if (valueStr.length > 7) fontSize = 22;
+  else if (valueStr.length > 5) fontSize = 26;
+
   let iconElement = '';
   if (icon) {
     iconElement = `
@@ -171,9 +178,39 @@ export function renderStatItem({ x, y, label, value, icon, accentColor, showProg
   return `
   <g>
     ${iconElement}
-    <text x="${x}" y="${y}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="32" font-weight="700" fill="${colors.primaryText}">${value}</text>
+    <text x="${x}" y="${y}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="${fontSize}" font-weight="700" fill="${colors.primaryText}">${value}</text>
     <text x="${x}" y="${y + 20}" font-family="'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" fill="${colors.mutedText}" letter-spacing="0.3">${label}</text>
     ${progressBar}
+  </g>`;
+}
+
+/**
+ * Render vertical E/M/H stat (Easy/Medium/Hard breakdown)
+ */
+function renderVerticalEMH({ x, y, easy, medium, hard, accentColor }) {
+  const { colors } = currentTheme;
+
+  // Colors for difficulty levels
+  const easyColor = '#10b981';  // Green
+  const medColor = '#f59e0b';   // Amber
+  const hardColor = '#ef4444';  // Red
+
+  const lineHeight = 18;
+  const labelWidth = 14;
+
+  return `
+  <g>
+    <!-- Easy -->
+    <text x="${x}" y="${y - 18}" font-family="'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="600" fill="${easyColor}">E</text>
+    <text x="${x + labelWidth}" y="${y - 18}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14" font-weight="700" fill="${colors.primaryText}">${easy}</text>
+    
+    <!-- Medium -->
+    <text x="${x}" y="${y}" font-family="'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="600" fill="${medColor}">M</text>
+    <text x="${x + labelWidth}" y="${y}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14" font-weight="700" fill="${colors.primaryText}">${medium}</text>
+    
+    <!-- Hard -->
+    <text x="${x}" y="${y + 18}" font-family="'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="600" fill="${hardColor}">H</text>
+    <text x="${x + labelWidth}" y="${y + 18}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14" font-weight="700" fill="${colors.primaryText}">${hard}</text>
   </g>`;
 }
 
@@ -189,6 +226,19 @@ export function renderCardWithStats({ x, y, width, height, title, stats, cardAcc
   const statsContent = stats.map((stat, index) => {
     const statX = x + 20 + (index * statSpacing);
     const accent = chartColors[index % chartColors.length];
+
+    // Handle vertical E/M/H layout
+    if (stat.isVertical) {
+      return renderVerticalEMH({
+        x: statX,
+        y: statsStartY,
+        easy: stat.easy,
+        medium: stat.medium,
+        hard: stat.hard,
+        accentColor: accent,
+      });
+    }
+
     return renderStatItem({
       x: statX,
       y: statsStartY,
