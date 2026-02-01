@@ -1,8 +1,11 @@
 // TTL-based in-memory cache
 
+// Production cache TTL: 30 minutes (1800000ms)
+// Development cache TTL: 5 minutes (300000ms)
+const DEFAULT_CACHE_TTL = process.env.NODE_ENV === 'production' ? 1800000 : 300000;
+
 class Cache {
-  constructor(defaultTTL = 300000) {
-    // Default TTL: 5 minutes (in milliseconds)
+  constructor(defaultTTL = DEFAULT_CACHE_TTL) {
     this.defaultTTL = defaultTTL;
     this.store = new Map();
   }
@@ -63,7 +66,7 @@ class Cache {
   }
 }
 
-// Singleton instance for GitHub data cache (5 minute TTL)
-export const githubCache = new Cache(300000);
+// Singleton instance for GitHub data cache
+export const githubCache = new Cache();
 
 export default Cache;
