@@ -1,6 +1,7 @@
 // SVG Layout System - Reusable rendering utilities
 
 import darkTheme from '../themes/dark.theme.js';
+import lightTheme from '../themes/light.theme.js';
 
 const LAYOUT = {
   width: 960,
@@ -10,8 +11,22 @@ const LAYOUT = {
   cardRadius: 12,
 };
 
+// Available themes
+const themes = {
+  dark: darkTheme,
+  light: lightTheme,
+};
+
 // Current active theme
 let currentTheme = darkTheme;
+
+/**
+ * Set the active theme
+ */
+export function setTheme(themeName) {
+  currentTheme = themes[themeName] || darkTheme;
+  return currentTheme;
+}
 
 /**
  * Get the current theme
