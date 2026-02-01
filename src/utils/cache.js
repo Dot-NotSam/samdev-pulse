@@ -1,6 +1,6 @@
 // TTL-based in-memory cache
 
-// Production cache TTL: 30 minutes (1800000ms)
+/ Production cache TTL: 30 minutes (1800000ms)
 // Development cache TTL: 5 minutes (300000ms)
 const DEFAULT_CACHE_TTL = process.env.NODE_ENV === 'production' ? 1800000 : 300000;
 
