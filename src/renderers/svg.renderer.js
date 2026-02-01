@@ -1,14 +1,14 @@
-// SVG Layout System - Reusable rendering utilities
+// SVG Layout System - Premium Modern Design
 
 import darkTheme from '../themes/dark.theme.js';
 import lightTheme from '../themes/light.theme.js';
 
 const LAYOUT = {
   width: 960,
-  padding: 24,
+  padding: 28,
   cardGap: 16,
-  borderRadius: 16,
-  cardRadius: 12,
+  borderRadius: 20,
+  cardRadius: 16,
 };
 
 // Available themes
@@ -36,73 +36,223 @@ export function getTheme() {
 }
 
 /**
- * Render the main background with rounded border
+ * Generate SVG definitions (gradients, filters, patterns)
+ */
+export function renderDefs() {
+  const { colors } = currentTheme;
+
+  return `
+  <defs>
+    <!-- Main gradient -->
+    <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="${colors.gradientStart}" stop-opacity="0.15"/>
+      <stop offset="50%" stop-color="${colors.gradientMid}" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="${colors.gradientEnd}" stop-opacity="0.15"/>
+    </linearGradient>
+    
+    <!-- Accent gradient for text/elements -->
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="${colors.gradientStart}"/>
+      <stop offset="100%" stop-color="${colors.gradientEnd}"/>
+    </linearGradient>
+    
+    <!-- Card glow effect -->
+    <filter id="cardGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    
+    <!-- Soft glow for accents -->
+    <filter id="softGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Noise texture pattern -->
+    <filter id="noise" x="0%" y="0%" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" result="noise"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feBlend in="SourceGraphic" in2="noise" mode="overlay" result="blend"/>
+      <feComposite in="blend" in2="SourceGraphic" operator="in"/>
+    </filter>
+    
+    <!-- Dot pattern -->
+    <pattern id="dotPattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="0.5" fill="${colors.border}" opacity="0.3"/>
+    </pattern>
+    
+    <!-- Grid pattern -->
+    <pattern id="gridPattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="${colors.border}" stroke-width="0.5" opacity="0.2"/>
+    </pattern>
+  </defs>`;
+}
+
+/**
+ * Render the main background with gradient overlay
  */
 export function renderBackground(width, height) {
   const { colors } = currentTheme;
-  return `<rect x="0" y="0" width="${width}" height="${height}" rx="${LAYOUT.borderRadius}" ry="${LAYOUT.borderRadius}" fill="${colors.background}" stroke="${colors.border}" stroke-width="2"/>`;
+
+  return `
+  <!-- Base background -->
+  <rect x="0" y="0" width="${width}" height="${height}" rx="${LAYOUT.borderRadius}" ry="${LAYOUT.borderRadius}" fill="${colors.background}"/>
+  
+  <!-- Gradient overlay -->
+  <rect x="0" y="0" width="${width}" height="${height}" rx="${LAYOUT.borderRadius}" ry="${LAYOUT.borderRadius}" fill="url(#mainGradient)"/>
+  
+  <!-- Subtle grid pattern -->
+  <rect x="0" y="0" width="${width}" height="${height}" rx="${LAYOUT.borderRadius}" ry="${LAYOUT.borderRadius}" fill="url(#gridPattern)" opacity="0.3"/>
+  
+  <!-- Top accent glow -->
+  <ellipse cx="${width / 2}" cy="0" rx="${width * 0.4}" ry="120" fill="${colors.glow}" opacity="0.08"/>
+  
+  <!-- Border with glow -->
+  <rect x="1" y="1" width="${width - 2}" height="${height - 2}" rx="${LAYOUT.borderRadius}" ry="${LAYOUT.borderRadius}" fill="none" stroke="url(#accentGradient)" stroke-width="1" opacity="0.4"/>`;
 }
 
 /**
- * Render a card container with title
+ * Render a modern card container
  */
-export function renderCard({ x, y, width, height, title }) {
+export function renderCard({ x, y, width, height, title, glowColor }) {
   const { colors } = currentTheme;
-  const titleY = y + 24;
+  const glow = glowColor || colors.glow;
 
   return `
   <g>
-    <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="${colors.cardBackground}" stroke="${colors.border}" stroke-width="1"/>
-    <text x="${x + 16}" y="${titleY}" font-family="Segoe UI, Ubuntu, sans-serif" font-size="14" font-weight="600" fill="${colors.secondaryText}">${title}</text>
+    <!-- Card glow -->
+    <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="${glow}" opacity="0.03" filter="url(#cardGlow)"/>
+    
+    <!-- Card background -->
+    <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="${colors.cardBackground}"/>
+    
+    <!-- Inner gradient -->
+    <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="url(#mainGradient)" opacity="0.5"/>
+    
+    <!-- Border -->
+    <rect x="${x + 0.5}" y="${y + 0.5}" width="${width - 1}" height="${height - 1}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="none" stroke="${colors.borderLight}" stroke-width="1" opacity="0.5"/>
+    
+    <!-- Title -->
+    <text x="${x + 20}" y="${y + 28}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" font-weight="600" fill="${colors.secondaryText}" letter-spacing="0.5">${title.toUpperCase()}</text>
+    
+    <!-- Title underline accent -->
+    <rect x="${x + 20}" y="${y + 36}" width="32" height="2" rx="1" fill="url(#accentGradient)" opacity="0.6"/>
   </g>`;
 }
 
 /**
- * Render a single stat item (label + value)
+ * Render a stat item with icon and modern styling
  */
-export function renderStatItem({ x, y, label, value }) {
+export function renderStatItem({ x, y, label, value, icon, accentColor, showProgress, progress }) {
   const { colors } = currentTheme;
+  const accent = accentColor || colors.accent;
+
+  let iconElement = '';
+  if (icon) {
+    iconElement = `
+      <g transform="translate(${x}, ${y - 28}) scale(0.7)">
+        <circle cx="12" cy="12" r="14" fill="${accent}" opacity="0.15"/>
+        <path d="${icon}" fill="${accent}" opacity="0.9" transform="translate(4, 4) scale(0.7)"/>
+      </g>`;
+  }
+
+  let progressBar = '';
+  if (showProgress && progress !== undefined) {
+    const barWidth = 60;
+    const fillWidth = Math.min(barWidth, (progress / 100) * barWidth);
+    progressBar = `
+      <rect x="${x}" y="${y + 28}" width="${barWidth}" height="3" rx="1.5" fill="${colors.border}"/>
+      <rect x="${x}" y="${y + 28}" width="${fillWidth}" height="3" rx="1.5" fill="${accent}"/>`;
+  }
 
   return `
   <g>
-    <text x="${x}" y="${y}" font-family="Segoe UI, Ubuntu, sans-serif" font-size="28" font-weight="700" fill="${colors.primaryText}">${value}</text>
-    <text x="${x}" y="${y + 22}" font-family="Segoe UI, Ubuntu, sans-serif" font-size="12" fill="${colors.secondaryText}">${label}</text>
+    ${iconElement}
+    <text x="${x}" y="${y}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="32" font-weight="700" fill="${colors.primaryText}">${value}</text>
+    <text x="${x}" y="${y + 20}" font-family="'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" fill="${colors.mutedText}" letter-spacing="0.3">${label}</text>
+    ${progressBar}
   </g>`;
 }
 
 /**
- * Render a card with stats
+ * Render a card with stats - modern design
  */
-export function renderCardWithStats({ x, y, width, height, title, stats }) {
-  const { colors } = currentTheme;
-  const titleY = y + 24;
-  const statsStartY = y + 70;
-  const statSpacing = width / stats.length;
+export function renderCardWithStats({ x, y, width, height, title, stats, cardAccent }) {
+  const { colors, chartColors } = currentTheme;
+  const glow = cardAccent || colors.glow;
+  const statsStartY = y + 85;
+  const statSpacing = (width - 40) / stats.length;
 
   const statsContent = stats.map((stat, index) => {
-    const statX = x + 16 + (index * statSpacing);
+    const statX = x + 20 + (index * statSpacing);
+    const accent = chartColors[index % chartColors.length];
     return renderStatItem({
       x: statX,
       y: statsStartY,
       label: stat.label,
       value: stat.value,
+      icon: stat.icon,
+      accentColor: accent,
+      showProgress: stat.showProgress,
+      progress: stat.progress,
     });
   }).join('');
 
   return `
   <g>
-    <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="${colors.cardBackground}" stroke="${colors.border}" stroke-width="1"/>
-    <text x="${x + 16}" y="${titleY}" font-family="Segoe UI, Ubuntu, sans-serif" font-size="14" font-weight="600" fill="${colors.secondaryText}">${title}</text>
+    <!-- Card glow -->
+    <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="${glow}" opacity="0.04" filter="url(#cardGlow)"/>
+    
+    <!-- Card background -->
+    <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="${colors.cardBackground}"/>
+    
+    <!-- Inner gradient -->
+    <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="url(#mainGradient)" opacity="0.3"/>
+    
+    <!-- Border -->
+    <rect x="${x + 0.5}" y="${y + 0.5}" width="${width - 1}" height="${height - 1}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="none" stroke="${colors.borderLight}" stroke-width="1" opacity="0.4"/>
+    
+    <!-- Title -->
+    <text x="${x + 20}" y="${y + 30}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" font-weight="600" fill="${colors.secondaryText}" letter-spacing="0.5">${title.toUpperCase()}</text>
+    
+    <!-- Title accent line -->
+    <rect x="${x + 20}" y="${y + 40}" width="28" height="2" rx="1" fill="url(#accentGradient)" opacity="0.7"/>
+    
     ${statsContent}
   </g>`;
 }
 
 /**
- * Render header section with title
+ * Render header section with branding
  */
-export function renderHeader({ x, y, title }) {
+export function renderHeader({ x, y, title, subtitle, avatarUrl }) {
   const { colors } = currentTheme;
-  return `<text x="${x}" y="${y}" font-family="Segoe UI, Ubuntu, sans-serif" font-size="24" font-weight="600" fill="${colors.primaryText}">${title}</text>`;
+
+  let avatarElement = '';
+  if (avatarUrl) {
+    avatarElement = `
+      <clipPath id="avatarClip">
+        <circle cx="${x + 24}" cy="${y - 8}" r="24"/>
+      </clipPath>
+      <circle cx="${x + 24}" cy="${y - 8}" r="26" fill="url(#accentGradient)" opacity="0.6"/>
+      <image href="${avatarUrl}" x="${x}" y="${y - 32}" width="48" height="48" clip-path="url(#avatarClip)"/>`;
+  }
+
+  const titleX = avatarUrl ? x + 64 : x;
+
+  return `
+  <g>
+    ${avatarElement}
+    <!-- Title with gradient -->
+    <text x="${titleX}" y="${y}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="26" font-weight="700" fill="url(#accentGradient)">${title}</text>
+    ${subtitle ? `<text x="${titleX}" y="${y + 22}" font-family="'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" fill="${colors.mutedText}">${subtitle}</text>` : ''}
+    
+    <!-- Branding -->
+    <text x="${LAYOUT.width - LAYOUT.padding}" y="${y}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="500" fill="${colors.mutedText}" text-anchor="end" opacity="0.6">samdev-pulse</text>
+  </g>`;
 }
 
 /**
@@ -125,7 +275,8 @@ export function calculateCardX(index, cardWidth) {
  * Wrap content in SVG root element
  */
 export function wrapSvg(content, width, height) {
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+${renderDefs()}
 ${content}
 </svg>`;
 }
