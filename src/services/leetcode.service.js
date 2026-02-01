@@ -2,41 +2,74 @@
 
 import { githubCache } from '../utils/cache.js';
 
-const LEETCODE_API_URL = 'https://leetcode-stats-api.herokuapp.com';
+const LEETCODE_GRAPHQL_URL = 'https://leetcode.com/graphql';
 
 /**
- * Fetch LeetCode stats for a user
- * Uses a public stats API that doesn't require authentication
+ * GraphQL query for LeetCode user stats
+ */
+const USER_STATS_QUERY = `
+query getUserProfile($username: String!) {
+  matchedUser(username: $username) {
+    username
+    profile {
+      ranking
+    }
+    submitStats {
+      acSubmissionNum {
+        difficulty
+        count
+      }
+    }
+  }
+  userContestRanking(username: $username) {
+    rating
+    globalRanking
+    attendedContestsCount
+  }
+}
+`;
+
+/**
+ * Fetch LeetCode stats using GraphQL API
  */
 async function fetchLeetCodeStats(username) {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+  const timeout = setTimeout(() => controller.abort(), 8000); // 8 second timeout
 
   try {
-    const response = await fetch(`${LEETCODE_API_URL}/${username}`, {
+    const response = await fetch(LEETCODE_GRAPHQL_URL, {
+      method: 'POST',
       headers: {
+        'Content-Type': 'application/json',
         'Accept': 'application/json',
         'User-Agent': 'samdev-pulse',
+        'Origin': 'https://leetcode.com',
+        'Referer': 'https://leetcode.com',
       },
+      body: JSON.stringify({
+        query: USER_STATS_QUERY,
+        variables: { username },
+      }),
       signal: controller.signal,
     });
 
     clearTimeout(timeout);
 
     if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error('LeetCode user not found');
-      }
       throw new Error(`LeetCode API error: ${response.status}`);
     }
 
-    const data = await response.json();
+    const json = await response.json();
 
-    if (data.status === 'error') {
-      throw new Error(data.message || 'Failed to fetch LeetCode data');
+    if (json.errors) {
+      throw new Error(json.errors[0]?.message || 'GraphQL query failed');
     }
 
-    return data;
+    if (!json.data?.matchedUser) {
+      throw new Error('LeetCode user not found');
+    }
+
+    return json.data;
   } catch (error) {
     clearTimeout(timeout);
     if (error.name === 'AbortError') {
@@ -50,14 +83,31 @@ async function fetchLeetCodeStats(username) {
  * Normalize LeetCode data into a clean object
  */
 function normalizeLeetCodeData(data) {
+  const user = data.matchedUser;
+  const contestData = data.userContestRanking;
+
+  // Extract solved counts by difficulty
+  const submissions = user?.submitStats?.acSubmissionNum || [];
+  const getCount = (difficulty) => {
+    const item = submissions.find(s => s.difficulty === difficulty);
+    return item?.count || 0;
+  };
+
+  const easySolved = getCount('Easy');
+  const mediumSolved = getCount('Medium');
+  const hardSolved = getCount('Hard');
+  const totalSolved = getCount('All');
+
   return {
-    totalSolved: data.totalSolved || 0,
-    easySolved: data.easySolved || 0,
-    mediumSolved: data.mediumSolved || 0,
-    hardSolved: data.hardSolved || 0,
-    acceptanceRate: data.acceptanceRate ? parseFloat(data.acceptanceRate) : 0,
-    ranking: data.ranking || 0,
-    contributionPoints: data.contributionPoints || 0,
+    totalSolved,
+    easySolved,
+    mediumSolved,
+    hardSolved,
+    ranking: user?.profile?.ranking || 0,
+    // Contest data (may be null if user hasn't participated)
+    contestRating: contestData?.rating ? Math.round(contestData.rating) : null,
+    globalRanking: contestData?.globalRanking || null,
+    contestsAttended: contestData?.attendedContestsCount || 0,
   };
 }
 
