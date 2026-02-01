@@ -32,13 +32,33 @@ function formatNumber(num) {
   return num.toString();
 }
 
-// GET /api/profile?username=octocat
-router.get('/', async (req, res) => {
-  const { username } = req.query;
+/**
+ * Calculate top languages from repos
+ */
+function getTopLanguages(repos, max = 5) {
+  const langCounts = {};
 
-  if (!username) {
-    return res.status(400).json({ error: 'username query parameter is required' });
-  }
+  repos.forEach((repo) => {
+    if (repo.language) {
+      langCounts[repo.language] = (langCounts[repo.language] || 0) + 1;
+    }
+  });
+
+  const sorted = Object.entries(langCounts)
+    .map(([label, value]) => ({ label, value }))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, max);
+
+  return sorted;
+}
+
+// GET /api/profile?username=octocat&theme=dark&leetcode=username
+router.get('/', async (req, res) => {
+  const { theme, leetcode } = req.query;
+  const username = req.query.username || DEFAULT_USERNAME;
+
+  // Set theme (defaults to dark)
+  setTheme(theme || 'dark');
 
   // Fetch GitHub data
   const result = await getGitHubUserData(username);
@@ -78,11 +98,11 @@ router.get('/', async (req, res) => {
     { label: 'Stars', value: formatNumber(data.totalStars) },
   ];
 
-  // Card 2: Streak Stats (placeholder data)
+  // Card 2: Streak Stats (real data from GraphQL)
   const streakStats = [
-    { label: 'Current', value: '14' },
-    { label: 'Longest', value: '45' },
-    { label: 'Total Days', value: '230' },
+    { label: 'Current', value: contributionData ? formatNumber(contributionData.currentStreak) : '-' },
+    { label: 'Longest', value: contributionData ? formatNumber(contributionData.longestStreak) : '-' },
+    { label: 'Total Days', value: contributionData ? formatNumber(contributionData.totalContributionDays) : '-' },
   ];
 
   // Card 3: Competitive Coding (placeholder data)
