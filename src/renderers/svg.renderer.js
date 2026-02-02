@@ -288,27 +288,57 @@ export function renderCardWithStats({ x, y, width, height, title, stats, cardAcc
 /**
  * Render header section with branding
  */
-export function renderHeader({ x, y, title, subtitle, avatarUrl }) {
+export function renderHeader({ x, y, title, subtitle, avatarUrl, align = 'left' }) {
   const { colors } = currentTheme;
+
+  // Calculate positions based on alignment
+  let avatarX, titleX, titleAnchor, subtitleAnchor;
+  const avatarSize = 48;
+  const avatarRadius = 24;
+  const contentWidth = LAYOUT.width - (2 * LAYOUT.padding);
+
+  if (align === 'center') {
+    // Center alignment
+    const titleWidth = title.length * 13; // Approximate width
+    const totalWidth = avatarUrl ? avatarSize + 16 + titleWidth : titleWidth;
+    const startX = x + (contentWidth - totalWidth) / 2;
+
+    avatarX = startX;
+    titleX = avatarUrl ? startX + avatarSize + 16 : startX + totalWidth / 2;
+    titleAnchor = avatarUrl ? 'start' : 'middle';
+    subtitleAnchor = avatarUrl ? 'start' : 'middle';
+  } else if (align === 'right') {
+    // Right alignment
+    avatarX = x + contentWidth - avatarSize;
+    titleX = avatarUrl ? avatarX - 16 : x + contentWidth;
+    titleAnchor = 'end';
+    subtitleAnchor = 'end';
+  } else {
+    // Left alignment (default)
+    avatarX = x;
+    titleX = avatarUrl ? x + avatarSize + 16 : x;
+    titleAnchor = 'start';
+    subtitleAnchor = 'start';
+  }
 
   let avatarElement = '';
   if (avatarUrl) {
+    const avatarCenterX = avatarX + avatarRadius;
+    const avatarCenterY = y - 8;
     avatarElement = `
       <clipPath id="avatarClip">
-        <circle cx="${x + 24}" cy="${y - 8}" r="24"/>
+        <circle cx="${avatarCenterX}" cy="${avatarCenterY}" r="${avatarRadius}"/>
       </clipPath>
-      <circle cx="${x + 24}" cy="${y - 8}" r="26" fill="url(#accentGradient)" opacity="0.6"/>
-      <image href="${avatarUrl}" x="${x}" y="${y - 32}" width="48" height="48" clip-path="url(#avatarClip)"/>`;
+      <circle cx="${avatarCenterX}" cy="${avatarCenterY}" r="${avatarRadius + 2}" fill="url(#accentGradient)" opacity="0.6"/>
+      <image href="${avatarUrl}" x="${avatarX}" y="${avatarCenterY - avatarRadius}" width="${avatarSize}" height="${avatarSize}" clip-path="url(#avatarClip)"/>`;
   }
-
-  const titleX = avatarUrl ? x + 64 : x;
 
   return `
   <g>
     ${avatarElement}
     <!-- Title with gradient -->
-    <text x="${titleX}" y="${y}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="26" font-weight="700" fill="url(#accentGradient)">${title}</text>
-    ${subtitle ? `<text x="${titleX}" y="${y + 22}" font-family="'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" fill="${colors.mutedText}">${subtitle}</text>` : ''}
+    <text x="${titleX}" y="${y}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="26" font-weight="700" fill="url(#accentGradient)" text-anchor="${titleAnchor}">${title}</text>
+    ${subtitle ? `<text x="${titleX}" y="${y + 22}" font-family="'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" fill="${colors.mutedText}" text-anchor="${subtitleAnchor}">${subtitle}</text>` : ''}
     
     <!-- Branding -->
     <text x="${LAYOUT.width - LAYOUT.padding}" y="${y}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="500" fill="${colors.mutedText}" text-anchor="end" opacity="0.6">samdev-pulse</text>
