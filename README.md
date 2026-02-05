@@ -74,6 +74,7 @@ Choose from 7 beautiful themes:
 
 ---
 
+## 📖 Usage
 
 Add this to your GitHub profile README:
 
@@ -89,8 +90,11 @@ Add this to your GitHub profile README:
 <!-- Dark theme (default) -->
 ![samdev-pulse](https://samdev-pulse.vercel.app/api/profile?username=YOUR_GITHUB_USERNAME&theme=dark)
 
-<!-- Light theme -->
-![samdev-pulse](https://samdev-pulse.vercel.app/api/profile?username=YOUR_GITHUB_USERNAME&theme=light)
+<!-- Dracula theme -->
+![samdev-pulse](https://samdev-pulse.vercel.app/api/profile?username=YOUR_GITHUB_USERNAME&theme=dracula)
+
+<!-- Nord theme -->
+![samdev-pulse](https://samdev-pulse.vercel.app/api/profile?username=YOUR_GITHUB_USERNAME&theme=nord)
 ```
 
 ### With LeetCode Stats
@@ -99,26 +103,41 @@ Add this to your GitHub profile README:
 ![samdev-pulse](https://samdev-pulse.vercel.app/api/profile?username=YOUR_GITHUB_USERNAME&leetcode=YOUR_LEETCODE_USERNAME)
 ```
 
+### Without LeetCode (Show Repository Stats Instead)
+
+```markdown
+![samdev-pulse](https://samdev-pulse.vercel.app/api/profile?username=YOUR_GITHUB_USERNAME&leetcode=false)
+```
+
+### With Custom Alignment
+
+```markdown
+<!-- Center-aligned header -->
+![samdev-pulse](https://samdev-pulse.vercel.app/api/profile?username=YOUR_GITHUB_USERNAME&align=center)
+
+<!-- Right-aligned header -->
+![samdev-pulse](https://samdev-pulse.vercel.app/api/profile?username=YOUR_GITHUB_USERNAME&align=right)
+```
+
 ### Full Example
 
 ```markdown
-![samdev-pulse](https://samdev-pulse.vercel.app/api/profile?username=octocat&theme=dark&leetcode=uwi)
+![samdev-pulse](https://samdev-pulse.vercel.app/api/profile?username=SamXop123&theme=tokyonight&leetcode=Dot_NotSam&align=center)
 ```
 
-## Query Parameters
+---
 
-| Parameter | Required | Default | Description |
-|-----------|----------|---------|-------------|
-| `username` | No | `octocat` | Your GitHub username |
-| `theme` | No | `dark` | Theme: `dark` or `light` |
-| `leetcode` | No | - | Your LeetCode username (optional) |
+## ⚙️ Query Parameters
 
-## Self-Hosting
+| Parameter | Type | Default     | Description |
+|-----------|------|-------------|-------------|
+| `username` | string | `SamXop123` | Your GitHub username |
+| `theme` | string | `dark`      | Theme name: `dark`, `light`, `dracula`, `nord`, `tokyonight`, `monokai`, `gruvbox` |
+| `leetcode` | string | -           | Your LeetCode username (or `false` to disable) |
+| `align` | string | `left`      | Header alignment: `left`, `center`, `right` |
 
-### Prerequisites
+---
 
-- Node.js 18+
-- GitHub Personal Access Token (for streak stats)
 
 ### Environment Variables
 
