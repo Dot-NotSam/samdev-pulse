@@ -28,8 +28,8 @@
         <span class="gradient-text">Beautifully Told</span>
       </h1>
       <p class="hero-subtitle">
-        One drop-in SVG image that showcases your complete developer profile—contributions, streaks,
-        languages, trophies—in a premium layout that stays automatically in sync.
+        Showcase your contributions, streaks, and trophies in one premium, real-time SVG designed to elevate your GitHub
+        profile.
       </p>
       <div class="hero-cta">
         <a href="#preview" class="btn btn-primary">
@@ -339,6 +339,14 @@
               </select>
             </div>
           </div>
+          <div class="preview-update-row">
+            <button id="update-preview-btn" class="btn btn-primary">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" />
+              </svg>
+              Update Preview
+            </button>
+          </div>
         </div>
 
         <div class="preview-frame">
@@ -558,6 +566,7 @@
       : 'https://samdev-pulse.vercel.app';
 
     function updatePreview() {
+      console.log('updatePreview called');
       const username = usernameInput.value.trim() || 'SamXop123';
       const leetcode = leetcodeInput.value.trim();
       const theme = themeSelect.value;
@@ -568,17 +577,42 @@
       if (leetcode) params.append('leetcode', leetcode);
       if (align && align !== 'left') params.append('align', align);
 
-      const localUrl = `/api/profile?${params.toString()}`;
+      const localUrl = `/api/profile?${params.toString()}&t=${Date.now()}`;
       const publicUrl = `${deployUrl}/api/profile?${params.toString()}`;
 
+      console.log('Updating preview with URL:', localUrl);
       previewImg.src = localUrl;
       snippet.textContent = `![samdev-pulse](${publicUrl})`;
     }
 
-    usernameInput.addEventListener('input', updatePreview);
-    leetcodeInput.addEventListener('input', updatePreview);
-    themeSelect.addEventListener('change', updatePreview);
-    alignSelect.addEventListener('change', updatePreview);
+    // Manual update button
+    const updateBtn = document.getElementById('update-preview-btn');
+    if (updateBtn) {
+      updateBtn.addEventListener('click', () => {
+        console.log('Update button clicked');
+        updateBtn.disabled = true;
+        updateBtn.innerHTML = `
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+          </svg>
+          Updating...
+        `;
+
+        updatePreview();
+
+        setTimeout(() => {
+          updateBtn.disabled = false;
+          updateBtn.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+            </svg>
+            Update Preview
+          `;
+        }, 500);
+      });
+    } else {
+      console.error('Update button not found!');
+    }
 
     copyBtn.addEventListener('click', async () => {
       try {
