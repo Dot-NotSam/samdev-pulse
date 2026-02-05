@@ -302,11 +302,68 @@
         <p class="section-subtitle">See your GitHub profile come to life instantly</p>
       </div>
 
+      <div class="preview-panel">
+        <div class="preview-controls">
+          <div class="input-row">
+            <div class="input-group">
+              <label for="username">GitHub Username</label>
+              <input id="username" name="username" type="text" value="SamXop123" autocomplete="off" spellcheck="false"
+                placeholder="Enter your username" />
+            </div>
+            <div class="input-group">
+              <label for="theme-select">Theme</label>
+              <select id="theme-select">
+                <option value="">Dark (Default)</option>
+                <option value="light">Light</option>
+                <option value="dracula">Dracula</option>
+                <option value="nord">Nord</option>
+                <option value="tokyonight">Tokyo Night</option>
+                <option value="monokai">Monokai</option>
+                <option value="gruvbox">Gruvbox</option>
+              </select>
+            </div>
+          </div>
+          <div class="input-row">
+            <div class="input-group">
+              <label for="leetcode">LeetCode Username (Optional)</label>
+              <input id="leetcode" name="leetcode" type="text" autocomplete="off" spellcheck="false"
+                placeholder="Leave empty to disable" />
+            </div>
+            <div class="input-group">
+              <label for="align-select">Alignment</label>
+              <select id="align-select">
+                <option value="left">Left</option>
+                <option value="center">Center</option>
+                <option value="right">Right</option>
+              </select>
+            </div>
+          </div>
+        </div>
 
         <div class="preview-frame">
           <img id="preview" src="/api/profile?username=SamXop123" alt="Profile dashboard preview" loading="lazy">
         </div>
 
+        <div class="code-section">
+          <div class="code-header">
+            <span class="code-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 18l6-6-6-6M8 6l-6 6 6 6" />
+              </svg>
+              Markdown Snippet
+            </span>
+            <button id="copy-btn" class="copy-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+              </svg>
+              Copy
+            </button>
+          </div>
+          <pre
+            class="code-block"><code id="snippet">![samdev-pulse](https://samdev-pulse.vercel.app/api/profile?username=SamXop123)</code></pre>
+        </div>
+      </div>
     </div>
   </section>
       </div>
