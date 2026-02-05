@@ -1,5 +1,5 @@
 {
-  "name": "samdev-pulse",
+  "name": "samdev_pulse",
   "version": "1.0.0",
   "description": "The perfect README generator for GitHub profiles",
   "main": "src/server.js",
