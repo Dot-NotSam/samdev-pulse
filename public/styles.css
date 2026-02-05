@@ -939,53 +939,84 @@ td code {
   flex-wrap: wrap;
 }
 
+/* ===== Footer ===== */
 .footer {
-  margin-top: 34px;
-  padding-top: 18px;
+  background: var(--bg-secondary);
   border-top: 1px solid var(--border);
+  padding: var(--spacing-3xl) 0 var(--spacing-xl);
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: var(--spacing-2xl);
+  margin-bottom: var(--spacing-2xl);
+  padding-bottom: var(--spacing-2xl);
+  border-bottom: 1px solid var(--border);
+}
+
+.footer-logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--spacing-sm);
+}
+
+.footer-tagline {
   color: var(--text-secondary);
-  font-size: 0.95rem;
+  font-size: 0.9375rem;
 }
 
-.footer a {
-  color: var(--accent);
+.footer-column h4 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.footer-column ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.footer-column a {
+  color: var(--text-secondary);
   text-decoration: none;
+  font-size: 0.9375rem;
+  transition: color var(--transition-base);
 }
 
-.footer a:hover {
+.footer-column a:hover {
+  color: var(--accent-purple);
+}
+
+.footer-bottom {
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: 0.875rem;
+}
+
+.footer-bottom p {
+  margin: 0.25rem 0;
+}
+
+.footer-bottom a {
+  color: var(--accent-purple);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.footer-bottom a:hover {
   text-decoration: underline;
 }
 
-.input-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin: 10px 0 14px;
-}
-
-.input-group label {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-}
-
-.input-group input {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px 12px;
-  color: var(--text-primary);
-  font-size: 0.98rem;
-  font-family: inherit;
-}
-
-.input-group input:focus {
-  outline: 1px solid var(--accent);
-  border-color: var(--accent);
-}
-
-@media (max-width: 640px) {
-  body {
-    padding: 36px 16px;
   }
 
   h1 {
