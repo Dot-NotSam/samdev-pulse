@@ -273,6 +273,69 @@ samdev-pulse/
 - Token needs `public_repo` and `read:user` permissions
 - Check if token has expired
 
+---
 
-MIT
+## 🤝 Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+
+### Quick Start
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Make your changes
+4. Test locally: `npm run dev`
+5. Commit: `git commit -m 'feat: add amazing feature'`
+6. Push: `git push origin feature/amazing-feature`
+7. Open a Pull Request
+
+### Ideas for Contributions
+- [ ] Add more themes (Solarized, One Dark Pro, Material)
+- [ ] Support for Codeforces/CodeChef stats
+- [ ] Animated SVG elements
+- [ ] More trophy categories
+- [ ] Custom color schemes
+- [ ] Weekly/monthly contribution graphs
+- [ ] Unit tests and CI/CD
+
+---
+
+## 🎨 Themes Gallery
+
+| Theme | Preview |
+|-------|---------|
+| `dark` | Default dark theme with purple accents |
+| `light` | Clean light theme for bright backgrounds |
+| `dracula` | Popular Dracula color scheme |
+| `nord` | Arctic, north-bluish color palette |
+| `tokyonight` | Night-inspired Tokyo theme |
+| `monokai` | Classic Monokai Pro colors |
+| `gruvbox` | Retro groove warm color scheme |
+
+---
+
+## 📝 License
+
+[MIT LICENSE](LICENSE) - [@SamXop123](https://www.github.com/SamXop123)
+
+---
+
+## 💖 Credits
+
+Built with ❤️ by SamXop123
+
+**Technologies Used:**
+- Node.js & Express.js
+- SVG rendering
+- GitHub REST & GraphQL APIs
+- LeetCode API
+
+---
+
+## ⭐ Show Your Support
+
+If you found this useful, give it a ⭐ on GitHub!
+
+---
+
 
