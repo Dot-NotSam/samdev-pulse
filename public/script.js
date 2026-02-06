@@ -108,3 +108,30 @@
       });
     });
   }
+
+  /* this function initialize all event listeners */
+  function init() {
+    // Update button listener
+    if (updateBtn) {
+      updateBtn.addEventListener('click', handleUpdateClick);
+    }
+
+    // Copy button listener
+    if (copyBtn) {
+      copyBtn.addEventListener('click', handleCopyClick);
+    }
+
+    // Set up smooth scrolling
+    setupSmoothScrolling();
+
+    // Initial preview update
+    updatePreview();
+  }
+
+  // Run initialization when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
