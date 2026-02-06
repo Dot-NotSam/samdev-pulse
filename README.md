@@ -1,341 +1,244 @@
+
 # 🚀 samdev-pulse
 
-### Project Unified Live Stats Engine
-> A **uniquely styled** GitHub profile README generator with personal branding, dynamic stats, contribution graphs, and achievement trophies—all in beautiful SVG format.
-
-
----
-
-## ✨ Features
-
-### 📊 **GitHub Activity Stats**
-- Total contributions this year
-- Pull requests opened
-- Issues opened
-- Real-time data via GitHub API
-
-### 🔥 **Streak Statistics**
-- Current active streak
-- Longest streak ever
-- Total contribution days
-- Powered by GitHub GraphQL API
-
-### 💻 **LeetCode Integration** *(Optional)*
-- Total problems solved
-- Easy / Medium / Hard breakdown
-- Contest rating with fallback to ranking
-- Toggle on/off with `&leetcode=false`
-
-### 📈 **Contribution Activity Graph**
-- Smooth SVG line chart
-- Last 30 days of contributions
-- Auto-scaled Y-axis
-- Gradient fill styling
-
-### 🍩 **Top Languages Donut Chart**
-- Top 5 most-used languages
-- Percentage-based slices
-- Legend with color indicators
-- Calculated from your public repositories
-
-### 🏆 **Trophy System**
-Unique achievement badges showcasing your GitHub milestones:
-
-| Trophy | Description | Tiers |
-|--------|-------------|-------|
-| 💪 **Commits** | Total contributions this year | Bronze → Silver → Gold → Diamond |
-| 🔀 **Pull Requests** | PRs opened | Bronze → Silver → Gold → Diamond |
-| 🐛 **Issues** | Issues opened | Bronze → Silver → Gold → Diamond |
-| 📦 **Repositories** | Public repos created | Bronze → Silver → Gold → Diamond |
-| ⭐ **Stars** | Total stars across repos | Bronze → Silver → Gold → Diamond |
-| 👥 **Followers** | GitHub followers | Bronze → Silver → Gold → Diamond |
-
-**Tier Requirements:**
-- 🥉 Bronze: Entry level (1+)
-- 🥈 Silver: 100+ (500+ for stars)
-- 🥇 Gold: 500+ (1000+ for stars)
-- 💎 Diamond: 1000+ (5000+ for stars)
-
-### 🎨 **Multi-Theme Support**
-Choose from 7 beautiful themes:
-- `dark` (default) - Purple accents on dark background
-- `light` - Clean and minimal
-- `dracula` - Popular Dracula color scheme
-- `nord` - Arctic, north-bluish palette
-- `tokyonight` - Night-inspired Tokyo theme
-- `monokai` - Classic Monokai Pro colors
-- `gruvbox` - Retro groove warm scheme
-
-### 🔧 **Customization Options**
-- Header alignment (`left`, `center`, `right`)
-- Conditional LeetCode stats
-- Fallback to Repository Stats when LeetCode is disabled
-- 30-minute caching for optimal performance
+> A calm, modern GitHub profile dashboard — generated as a single SVG.  
+>  
+> Drop one image into your README and get live GitHub stats, contribution activity, language breakdowns, and achievement trophies. No widgets. No clutter. It just works.
 
 ---
 
-## 📖 Usage
+## ⚡ Quick Usage
 
-Add this to your GitHub profile README:
+Add this to your **GitHub profile README** (repo name = your username):
 
-### Basic Usage
-
-```markdown
+```md
 ![samdev-pulse](https://samdev-pulse.vercel.app/api/profile?username=YOUR_GITHUB_USERNAME)
+````
+
+That’s it. Your profile now renders a live dashboard.
+
+### Live Example Preview
+
+![samdev-pulse live preview](https://samdev-pulse.vercel.app/api/profile?username=SamXop123)
+
+---
+
+## 🎨 Customization Examples
+
+### Theme
+
+```md
+![samdev-pulse](https://samdev-pulse.vercel.app/api/profile?username=YOUR_GITHUB_USERNAME&theme=tokyonight)
 ```
 
-### With Theme
+Available themes:
+`dark` (default), `light`, `dracula`, `nord`, `tokyonight`, `monokai`, `gruvbox`
 
-```markdown
-<!-- Dark theme (default) -->
-![samdev-pulse](https://samdev-pulse.vercel.app/api/profile?username=YOUR_GITHUB_USERNAME&theme=dark)
+---
 
-<!-- Dracula theme -->
-![samdev-pulse](https://samdev-pulse.vercel.app/api/profile?username=YOUR_GITHUB_USERNAME&theme=dracula)
+### LeetCode Stats (Optional)
 
-<!-- Nord theme -->
-![samdev-pulse](https://samdev-pulse.vercel.app/api/profile?username=YOUR_GITHUB_USERNAME&theme=nord)
-```
-
-### With LeetCode Stats
-
-```markdown
+```md
 ![samdev-pulse](https://samdev-pulse.vercel.app/api/profile?username=YOUR_GITHUB_USERNAME&leetcode=YOUR_LEETCODE_USERNAME)
 ```
 
-### Without LeetCode (Show Repository Stats Instead)
+Disable LeetCode and show repository stats instead:
 
-```markdown
+```md
 ![samdev-pulse](https://samdev-pulse.vercel.app/api/profile?username=YOUR_GITHUB_USERNAME&leetcode=false)
 ```
 
-### With Custom Alignment
+---
 
-```markdown
-<!-- Center-aligned header -->
+### Header Alignment
+
+```md
 ![samdev-pulse](https://samdev-pulse.vercel.app/api/profile?username=YOUR_GITHUB_USERNAME&align=center)
-
-<!-- Right-aligned header -->
-![samdev-pulse](https://samdev-pulse.vercel.app/api/profile?username=YOUR_GITHUB_USERNAME&align=right)
 ```
+
+Options: `left` (default), `center`, `right`
+
+---
 
 ### Full Example
 
-```markdown
+```md
 ![samdev-pulse](https://samdev-pulse.vercel.app/api/profile?username=SamXop123&theme=tokyonight&leetcode=Dot_NotSam&align=center)
 ```
 
 ---
 
-## ⚙️ Query Parameters
+## Why samdev-pulse?
 
-| Parameter | Type | Default     | Description |
-|-----------|------|-------------|-------------|
-| `username` | string | `SamXop123` | Your GitHub username |
-| `theme` | string | `dark`      | Theme name: `dark`, `light`, `dracula`, `nord`, `tokyonight`, `monokai`, `gruvbox` |
-| `leetcode` | string | -           | Your LeetCode username (or `false` to disable) |
-| `align` | string | `left`      | Header alignment: `left`, `center`, `right` |
+* Designed as **one cohesive SVG**, not stitched widgets
+* Calm, readable visuals that don’t overpower your profile
+* Built for developers who care about craft, clarity, and signal over noise
 
 ---
 
+## ✨ Features
+
+### 📊 GitHub Activity
+
+* Total contributions (year)
+* Pull requests opened
+* Issues opened
+* Live data via GitHub REST API
+
+### 🔥 Streak Statistics
+
+* Current streak
+* Longest streak
+* Total contribution days
+* Powered by GitHub GraphQL API
+
+### 📈 Contribution Activity Graph
+
+* SVG line chart (last 30 days)
+* Auto-scaled Y-axis
+* Smooth curves with gradient fill
+
+### 🍩 Top Languages
+
+* Donut chart (top 5 languages)
+* Percentage-based slices
+* Calculated from public repositories
+
+### 💻 LeetCode Integration (Optional)
+
+* Total problems solved
+* Easy / Medium / Hard breakdown
+* Contest rating with fallback to ranking
+
+---
+
+## 🏆 Achievement Trophies
+
+A visual trophy system highlighting GitHub milestones:
+
+| Trophy           | Description         |
+| ---------------- | ------------------- |
+| 💪 Commits       | Total contributions |
+| 🔀 Pull Requests | PRs opened          |
+| 🐛 Issues        | Issues opened       |
+| 📦 Repositories  | Public repos        |
+| ⭐ Stars          | Total stars         |
+| 👥 Followers     | GitHub followers    |
+
+<details>
+<summary>📊 Trophy tier requirements</summary>
+
+* 🥉 Bronze: Entry level (1+)
+* 🥈 Silver: 100+ (500+ for stars)
+* 🥇 Gold: 500+ (1000+ for stars)
+* 💎 Diamond: 1000+ (5000+ for stars)
+
+</details>
+
+---
+
+## ⚙️ Query Parameters
+
+| Parameter  | Type           | Default     | Description                  |
+| ---------- | -------------- |-------------| ---------------------------- |
+| `username` | string         | `SamXop123` | GitHub username              |
+| `theme`    | string         | `dark`      | Visual theme                 |
+| `leetcode` | string / false | –           | LeetCode username or disable |
+| `align`    | string         | `left`      | Header alignment             |
+
+---
 
 ## 🛠️ Local Development
 
 ### Prerequisites
 
-- Node.js 18+ installed
-- GitHub Personal Access Token (see Vercel step 2 above)
+* Node.js 18+
+* GitHub Personal Access Token
 
 ### Setup
 
 ```bash
-# Clone the repository
 git clone https://github.com/SamXop123/samdev-pulse.git
 cd samdev-pulse
-
-# Install dependencies
 npm install
 ```
 
 ### Environment Variables
 
-Create a `.env` file in the root directory:
-
 ```env
-GITHUB_TOKEN=your_github_personal_access_token_here
+GITHUB_TOKEN=your_github_personal_access_token
 DEFAULT_USERNAME=octocat
 PORT=3000
 NODE_ENV=development
 ```
 
-### Run Development Server
+### Run
 
 ```bash
-# Start the server
 npm run dev
 ```
 
-The server will start at `http://localhost:3000`
+Visit:
 
-### Test Locally
-
-Open in browser:
 ```
 http://localhost:3000/api/profile?username=octocat
-http://localhost:3000/api/profile?username=YOUR_USERNAME&theme=dracula
-http://localhost:3000/api/profile?username=YOUR_USERNAME&leetcode=YOUR_LEETCODE_USERNAME
 ```
 
 ---
 
-## 🔍 API Endpoints
+## 🔍 API
 
 ### `GET /api/profile`
 
-Returns an SVG image of the profile dashboard.
+Returns an SVG dashboard.
 
-**Query Parameters:**
-- `username` - GitHub username (default: `octocat`)
-- `theme` - Theme name (default: `dark`)
-- `leetcode` - LeetCode username or `false` to disable
-- `align` - Header alignment: `left`, `center`, `right`
-
-**Response:**
-- Content-Type: `image/svg+xml`
-- Cache-Control: `public, max-age=1800` (30 minutes)
+* Content-Type: `image/svg+xml`
+* Cache-Control: `public, max-age=1800`
 
 ### `GET /health`
 
 Health check endpoint.
-
-**Response:**
-```json
-{
-  "status": "ok",
-  "timestamp": "2026-02-04T00:00:00.000Z"
-}
-```
 
 ---
 
 ## 📁 Project Structure
 
 ```
-samdev-pulse/
-├── src/
-│   ├── server.js                      # Express app entry point
-│   ├── routes/
-│   │   └── profile.route.js           # Main API route handler
-│   ├── services/
-│   │   ├── github.service.js          # GitHub REST API
-│   │   ├── github-graphql.service.js  # GitHub GraphQL API (streaks)
-│   │   └── leetcode.service.js        # LeetCode API integration
-│   ├── renderers/
-│   │   ├── svg.renderer.js            # SVG layout & cards
-│   │   └── chart.renderer.js          # Graphs & charts
-│   ├── themes/
-│   │   ├── dark.theme.js
-│   │   ├── light.theme.js
-│   │   ├── dracula.theme.js
-│   │   ├── nord.theme.js
-│   │   ├── tokyonight.theme.js
-│   │   ├── monokai.theme.js
-│   │   └── gruvbox.theme.js
-│   └── utils/
-│       └── cache.js                   # In-memory TTL cache
-├── package.json
-├── vercel.json                        # Vercel configuration
-└── README.md
+src/
+├── routes/        # API routes
+├── services/      # GitHub & LeetCode APIs
+├── renderers/     # SVG layout & charts
+├── themes/        # Theme definitions
+└── utils/         # Caching & helpers
 ```
-
----
-
-## 🐛 Troubleshooting
-
-### SVG not showing in README
-- Ensure the URL is correct and accessible
-- Check that your deployment is live
-- Verify environment variables are set correctly
-- Clear GitHub's cache by appending `?v=1` to URL
-
-### Data not updating
-- GitHub caches images for ~5-10 minutes
-- Cache-Control is set to 30 minutes on the API
-- Try appending a query param like `&v=2` to force refresh
-
-### LeetCode stats not showing
-- Verify your LeetCode username is correct
-- LeetCode API may be rate-limited or down
-- The dashboard will gracefully fallback to showing placeholders
-
-### Contribution graph shows fake data
-- Ensure `GITHUB_TOKEN` is set with correct scopes
-- Token needs `public_repo` and `read:user` permissions
-- Check if token has expired
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+Contributions are welcome.
+Please see `CONTRIBUTING.md` for guidelines.
 
-### Quick Start
+Ideas:
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Make your changes
-4. Test locally: `npm run dev`
-5. Commit: `git commit -m 'feat: add amazing feature'`
-6. Push: `git push origin feature/amazing-feature`
-7. Open a Pull Request
-
-### Ideas for Contributions
-- [ ] Add more themes (Solarized, One Dark Pro, Material)
-- [ ] Support for Codeforces/CodeChef stats
-- [ ] Animated SVG elements
-- [ ] More trophy categories
-- [ ] Custom color schemes
-- [ ] Weekly/monthly contribution graphs
-- [ ] Unit tests and CI/CD
-
----
-
-## 🎨 Themes Gallery
-
-| Theme | Preview |
-|-------|---------|
-| `dark` | Default dark theme with purple accents |
-| `light` | Clean light theme for bright backgrounds |
-| `dracula` | Popular Dracula color scheme |
-| `nord` | Arctic, north-bluish color palette |
-| `tokyonight` | Night-inspired Tokyo theme |
-| `monokai` | Classic Monokai Pro colors |
-| `gruvbox` | Retro groove warm color scheme |
+* More themes
+* Codeforces / CodeChef support
+* New trophy categories
+* Animated SVG elements
+* CI & tests
 
 ---
 
 ## 📝 License
 
-[MIT LICENSE](LICENSE) - [@SamXop123](https://www.github.com/SamXop123)
+MIT © [SamXop123](https://github.com/SamXop123)
 
 ---
 
-## 💖 Credits
+## ⭐ Support
 
-Built with ❤️ by SamXop123
+If this helped you, consider giving the repo a ⭐
+It helps more developers discover the project.
 
-**Technologies Used:**
-- Node.js & Express.js
-- SVG rendering
-- GitHub REST & GraphQL APIs
-- LeetCode API
 
 ---
-
-## ⭐ Show Your Support
-
-If you found this useful, give it a ⭐ on GitHub!
-
----
-
-
