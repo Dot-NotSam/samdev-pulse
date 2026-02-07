@@ -6,8 +6,6 @@ import { inject } from '@vercel/analytics';
 import profileRoute from './routes/profile.route.js';
 
 dotenv.config();
-
-// Initialize Vercel Analytics
 inject();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -17,10 +15,10 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
-// Serve static files from public directory
+// render html file
 app.use(express.static(join(__dirname, '..', 'public')));
 
-// Validate environment on startup
+// validates env on startup
 function validateEnv() {
   const warnings = [];
 
