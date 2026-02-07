@@ -1,4 +1,4 @@
-// SVG Layout System - Premium Modern Design
+// SVG Layout System
 
 import darkTheme from '../themes/dark.theme.js';
 import lightTheme from '../themes/light.theme.js';
@@ -16,7 +16,7 @@ const LAYOUT = {
   cardRadius: 16,
 };
 
-// Available themes
+// available themes
 const themes = {
   dark: darkTheme,
   light: lightTheme,
@@ -27,52 +27,46 @@ const themes = {
   tokyonight: tokyonightTheme,
 };
 
-// Current active theme
+// current active theme
 let currentTheme = darkTheme;
 
-/**
- * Set the active theme
- */
+// set active theme
 export function setTheme(themeName) {
   currentTheme = themes[themeName] || darkTheme;
   return currentTheme;
 }
 
-/**
- * Get the current theme
- */
+// get current theme
 export function getTheme() {
   return currentTheme;
 }
 
-/**
- * Generate SVG definitions (gradients, filters, patterns)
- */
+// generate SVG definitions (gradients, filters, patterns)
 export function renderDefs() {
   const { colors } = currentTheme;
 
   return `
   <defs>
-    <!-- Main gradient -->
+    <!-- main gradient -->
     <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="${colors.gradientStart}" stop-opacity="0.15"/>
       <stop offset="50%" stop-color="${colors.gradientMid}" stop-opacity="0.08"/>
       <stop offset="100%" stop-color="${colors.gradientEnd}" stop-opacity="0.15"/>
     </linearGradient>
     
-    <!-- Accent gradient for text/elements -->
+    <!-- accent gradient for text/elements -->
     <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" stop-color="${colors.gradientStart}"/>
       <stop offset="100%" stop-color="${colors.gradientEnd}"/>
     </linearGradient>
     
-    <!-- Card glow effect -->
+    <!-- card glow effect -->
     <filter id="cardGlow" x="-50%" y="-50%" width="200%" height="200%">
       <feGaussianBlur stdDeviation="8" result="blur"/>
       <feComposite in="SourceGraphic" in2="blur" operator="over"/>
     </filter>
     
-    <!-- Soft glow for accents -->
+    <!-- soft glow for accents -->
     <filter id="softGlow" x="-100%" y="-100%" width="300%" height="300%">
       <feGaussianBlur stdDeviation="4" result="blur"/>
       <feMerge>
@@ -81,7 +75,7 @@ export function renderDefs() {
       </feMerge>
     </filter>
     
-    <!-- Noise texture pattern -->
+    <!-- noise texture pattern -->
     <filter id="noise" x="0%" y="0%" width="100%" height="100%">
       <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" result="noise"/>
       <feColorMatrix type="saturate" values="0"/>
@@ -89,78 +83,72 @@ export function renderDefs() {
       <feComposite in="blend" in2="SourceGraphic" operator="in"/>
     </filter>
     
-    <!-- Dot pattern -->
+    <!-- dot pattern -->
     <pattern id="dotPattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
       <circle cx="2" cy="2" r="0.5" fill="${colors.border}" opacity="0.3"/>
     </pattern>
     
-    <!-- Grid pattern -->
+    <!-- grid pattern -->
     <pattern id="gridPattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
       <path d="M 40 0 L 0 0 0 40" fill="none" stroke="${colors.border}" stroke-width="0.5" opacity="0.2"/>
     </pattern>
   </defs>`;
 }
 
-/**
- * Render the main background with gradient overlay
- */
+// render the main background with gradient overlay
 export function renderBackground(width, height) {
   const { colors } = currentTheme;
 
   return `
-  <!-- Base background -->
+  <!-- base background -->
   <rect x="0" y="0" width="${width}" height="${height}" rx="${LAYOUT.borderRadius}" ry="${LAYOUT.borderRadius}" fill="${colors.background}"/>
   
-  <!-- Gradient overlay -->
+  <!-- gradient overlay -->
   <rect x="0" y="0" width="${width}" height="${height}" rx="${LAYOUT.borderRadius}" ry="${LAYOUT.borderRadius}" fill="url(#mainGradient)"/>
   
-  <!-- Subtle grid pattern -->
+  <!-- subtle grid pattern -->
   <rect x="0" y="0" width="${width}" height="${height}" rx="${LAYOUT.borderRadius}" ry="${LAYOUT.borderRadius}" fill="url(#gridPattern)" opacity="0.3"/>
   
-  <!-- Top accent glow -->
+  <!-- top accent glow -->
   <ellipse cx="${width / 2}" cy="0" rx="${width * 0.4}" ry="120" fill="${colors.glow}" opacity="0.08"/>
   
-  <!-- Border with glow -->
+  <!-- border with glow -->
   <rect x="1" y="1" width="${width - 2}" height="${height - 2}" rx="${LAYOUT.borderRadius}" ry="${LAYOUT.borderRadius}" fill="none" stroke="url(#accentGradient)" stroke-width="1" opacity="0.4"/>`;
 }
 
-/**
- * Render a modern card container
- */
+// render a modern card container
 export function renderCard({ x, y, width, height, title, glowColor }) {
   const { colors } = currentTheme;
   const glow = glowColor || colors.glow;
 
   return `
   <g>
-    <!-- Card glow -->
+    <!-- card glow -->
     <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="${glow}" opacity="0.03" filter="url(#cardGlow)"/>
     
-    <!-- Card background -->
+    <!-- card background -->
     <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="${colors.cardBackground}"/>
     
-    <!-- Inner gradient -->
+    <!-- inner gradient -->
     <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="url(#mainGradient)" opacity="0.5"/>
     
-    <!-- Border -->
+    <!-- border -->
     <rect x="${x + 0.5}" y="${y + 0.5}" width="${width - 1}" height="${height - 1}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="none" stroke="${colors.borderLight}" stroke-width="1" opacity="0.5"/>
     
-    <!-- Title -->
+    <!-- title -->
     <text x="${x + 20}" y="${y + 28}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" font-weight="600" fill="${colors.secondaryText}" letter-spacing="0.5">${title.toUpperCase()}</text>
     
-    <!-- Title underline accent -->
+    <!-- title underline accent -->
     <rect x="${x + 20}" y="${y + 36}" width="32" height="2" rx="1" fill="url(#accentGradient)" opacity="0.6"/>
   </g>`;
 }
 
-/**
- * Render a stat item with icon and modern styling
- */
+// render a stat item with icon
 export function renderStatItem({ x, y, label, value, icon, accentColor, showProgress, progress }) {
   const { colors } = currentTheme;
   const accent = accentColor || colors.accent;
 
-  // Dynamic font size based on value length
+  // dynamic font size based on value length
   const valueStr = String(value);
   let fontSize = 32;
   if (valueStr.length > 10) fontSize = 18;
@@ -194,39 +182,34 @@ export function renderStatItem({ x, y, label, value, icon, accentColor, showProg
   </g>`;
 }
 
-/**
- * Render vertical E/M/H stat (Easy/Medium/Hard breakdown)
- */
+// renders vertical E/M/H stat
 function renderVerticalEMH({ x, y, easy, medium, hard, accentColor }) {
   const { colors } = currentTheme;
 
-  // Colors for difficulty levels
-  const easyColor = '#10b981';  // Green
-  const medColor = '#f59e0b';   // Amber
-  const hardColor = '#ef4444';  // Red
+  const easyColor = '#10b981';  // green
+  const medColor = '#f59e0b';   // amber
+  const hardColor = '#ef4444';  // red
 
   const lineHeight = 18;
   const labelWidth = 14;
 
   return `
   <g>
-    <!-- Easy -->
+    <!-- easy -->
     <text x="${x}" y="${y - 18}" font-family="'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="600" fill="${easyColor}">E</text>
     <text x="${x + labelWidth}" y="${y - 18}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14" font-weight="700" fill="${colors.primaryText}">${easy}</text>
     
-    <!-- Medium -->
+    <!-- medium -->
     <text x="${x}" y="${y}" font-family="'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="600" fill="${medColor}">M</text>
     <text x="${x + labelWidth}" y="${y}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14" font-weight="700" fill="${colors.primaryText}">${medium}</text>
     
-    <!-- Hard -->
+    <!-- hard -->
     <text x="${x}" y="${y + 18}" font-family="'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="600" fill="${hardColor}">H</text>
     <text x="${x + labelWidth}" y="${y + 18}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="14" font-weight="700" fill="${colors.primaryText}">${hard}</text>
   </g>`;
 }
 
-/**
- * Render a card with stats - modern design
- */
+// renders a card with stats
 export function renderCardWithStats({ x, y, width, height, title, stats, cardAccent }) {
   const { colors, chartColors } = currentTheme;
   const glow = cardAccent || colors.glow;
@@ -237,7 +220,7 @@ export function renderCardWithStats({ x, y, width, height, title, stats, cardAcc
     const statX = x + 20 + (index * statSpacing);
     const accent = chartColors[index % chartColors.length];
 
-    // Handle vertical E/M/H layout
+    // handle vertical E/M/H layout
     if (stat.isVertical) {
       return renderVerticalEMH({
         x: statX,
@@ -263,43 +246,41 @@ export function renderCardWithStats({ x, y, width, height, title, stats, cardAcc
 
   return `
   <g>
-    <!-- Card glow -->
+    <!-- card glow -->
     <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="${glow}" opacity="0.04" filter="url(#cardGlow)"/>
     
-    <!-- Card background -->
+    <!-- card background -->
     <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="${colors.cardBackground}"/>
     
-    <!-- Inner gradient -->
+    <!-- inner gradient -->
     <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="url(#mainGradient)" opacity="0.3"/>
     
-    <!-- Border -->
+    <!-- border -->
     <rect x="${x + 0.5}" y="${y + 0.5}" width="${width - 1}" height="${height - 1}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="none" stroke="${colors.borderLight}" stroke-width="1" opacity="0.4"/>
     
-    <!-- Title -->
+    <!-- title -->
     <text x="${x + 20}" y="${y + 30}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" font-weight="600" fill="${colors.secondaryText}" letter-spacing="0.5">${title.toUpperCase()}</text>
     
-    <!-- Title accent line -->
+    <!-- title accent line -->
     <rect x="${x + 20}" y="${y + 40}" width="28" height="2" rx="1" fill="url(#accentGradient)" opacity="0.7"/>
     
     ${statsContent}
   </g>`;
 }
 
-/**
- * Render header section with branding
- */
+// render header section with branding
 export function renderHeader({ x, y, title, subtitle, avatarUrl, align = 'left' }) {
   const { colors } = currentTheme;
 
-  // Calculate positions based on alignment
+  // calculate positions based on alignment
   let avatarX, titleX, titleAnchor, subtitleAnchor;
   const avatarSize = 48;
   const avatarRadius = 24;
   const contentWidth = LAYOUT.width - (2 * LAYOUT.padding);
 
   if (align === 'center') {
-    // Center alignment
-    const titleWidth = title.length * 13; // Approximate width
+    // center alignment
+    const titleWidth = title.length * 13;
     const totalWidth = avatarUrl ? avatarSize + 16 + titleWidth : titleWidth;
     const startX = x + (contentWidth - totalWidth) / 2;
 
@@ -308,13 +289,13 @@ export function renderHeader({ x, y, title, subtitle, avatarUrl, align = 'left' 
     titleAnchor = avatarUrl ? 'start' : 'middle';
     subtitleAnchor = avatarUrl ? 'start' : 'middle';
   } else if (align === 'right') {
-    // Right alignment
+    // right alignment
     avatarX = x + contentWidth - avatarSize;
     titleX = avatarUrl ? avatarX - 16 : x + contentWidth;
     titleAnchor = 'end';
     subtitleAnchor = 'end';
   } else {
-    // Left alignment (default)
+    // left alignment
     avatarX = x;
     titleX = avatarUrl ? x + avatarSize + 16 : x;
     titleAnchor = 'start';
@@ -333,46 +314,42 @@ export function renderHeader({ x, y, title, subtitle, avatarUrl, align = 'left' 
       <image href="${avatarUrl}" x="${avatarX}" y="${avatarCenterY - avatarRadius}" width="${avatarSize}" height="${avatarSize}" clip-path="url(#avatarClip)"/>`;
   }
 
-  // Branding position: left when align=right, right otherwise
+  // branding position: left when align=right, right otherwise
   const brandingX = align === 'right' ? LAYOUT.padding : LAYOUT.width - LAYOUT.padding;
   const brandingAnchor = align === 'right' ? 'start' : 'end';
 
   return `
   <g>
     ${avatarElement}
-    <!-- Title with gradient -->
+    <!-- title with gradient -->
     <text x="${titleX}" y="${y}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="26" font-weight="700" fill="url(#accentGradient)" text-anchor="${titleAnchor}">${title}</text>
     ${subtitle ? `<text x="${titleX}" y="${y + 22}" font-family="'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" fill="${colors.mutedText}" text-anchor="${subtitleAnchor}">${subtitle}</text>` : ''}
     
-    <!-- Branding -->
+    <!-- branding -->
     <text x="${brandingX}" y="${y}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="12" font-weight="500" fill="${colors.mutedText}" text-anchor="${brandingAnchor}" opacity="0.6">samdev-pulse</text>
   </g>`;
 }
 
-/**
- * Calculate card width for a row with n cards
- */
+// calculate card width for a row with n cards
 export function calculateCardWidth(numCards) {
   const availableWidth = LAYOUT.width - (LAYOUT.padding * 2);
   const totalGaps = (numCards - 1) * LAYOUT.cardGap;
   return (availableWidth - totalGaps) / numCards;
 }
 
-/**
- * Calculate card x position for index in row
- */
+// calculate card x position for index in row
 export function calculateCardX(index, cardWidth) {
   return LAYOUT.padding + (index * (cardWidth + LAYOUT.cardGap));
 }
 
 /**
- * Get trophy tier based on value and thresholds
- * Returns { tier, color, glowIntensity }
+ * get trophy tier based on value and thresholds
+ * it returns { tier, color, glowIntensity }
  */
 function getTrophyTier(value, thresholds) {
   const { colors } = currentTheme;
 
-  // Tier thresholds: S(legendary), A(epic), B(rare), C(uncommon), D(common)
+  // tier thresholds: S(legendary), A(epic), B(rare), C(uncommon), D(common)
   if (value >= thresholds.s) return { tier: 'S', color: '#ffd700', glowIntensity: 0.8, label: 'Legendary' };
   if (value >= thresholds.a) return { tier: 'A', color: '#a855f7', glowIntensity: 0.6, label: 'Epic' };
   if (value >= thresholds.b) return { tier: 'B', color: '#3b82f6', glowIntensity: 0.4, label: 'Rare' };
@@ -380,14 +357,12 @@ function getTrophyTier(value, thresholds) {
   return { tier: 'D', color: '#64748b', glowIntensity: 0.1, label: 'Common' };
 }
 
-/**
- * Render a hexagonal trophy badge
- */
+// render a hexagonal trophy badge
 function renderTrophyBadge({ x, y, size, tier, icon, label, value, uniqueId }) {
   const { colors } = currentTheme;
   const halfSize = size / 2;
 
-  // Hexagon points (pointy-top orientation)
+  // hexagon points
   const hexPoints = [];
   for (let i = 0; i < 6; i++) {
     const angle = (Math.PI / 3) * i - Math.PI / 2;
@@ -395,7 +370,7 @@ function renderTrophyBadge({ x, y, size, tier, icon, label, value, uniqueId }) {
   }
   const hexPath = hexPoints.join(' ');
 
-  // Inner hexagon for border effect
+  // inner hexagon for border effect
   const innerHexPoints = [];
   for (let i = 0; i < 6; i++) {
     const angle = (Math.PI / 3) * i - Math.PI / 2;
@@ -405,45 +380,43 @@ function renderTrophyBadge({ x, y, size, tier, icon, label, value, uniqueId }) {
 
   return `
   <g>
-    <!-- Outer glow -->
+    <!-- outer glow -->
     <polygon points="${hexPath}" fill="${tier.color}" opacity="${tier.glowIntensity * 0.3}" filter="url(#softGlow)"/>
     
-    <!-- Main hexagon background -->
+    <!-- main hexagon background -->
     <polygon points="${hexPath}" fill="${colors.cardBackground}"/>
     
-    <!-- Gradient overlay -->
+    <!-- gradient overlay -->
     <polygon points="${hexPath}" fill="url(#mainGradient)" opacity="0.4"/>
     
-    <!-- Tier colored border -->
+    <!-- tier colored border -->
     <polygon points="${hexPath}" fill="none" stroke="${tier.color}" stroke-width="2" opacity="0.8"/>
     
-    <!-- Inner hexagon accent -->
+    <!-- inner hexagon accent -->
     <polygon points="${innerHexPoints.join(' ')}" fill="none" stroke="${tier.color}" stroke-width="1" opacity="0.3"/>
     
-    <!-- Icon -->
+    <!-- icon -->
     <g transform="translate(${x + halfSize - 10}, ${y + halfSize - 18})">
       <path d="${icon}" fill="${tier.color}" opacity="0.9" transform="scale(0.9)"/>
     </g>
     
-    <!-- Tier badge -->
+    <!-- tier badge -->
     <circle cx="${x + size - 8}" cy="${y + 12}" r="10" fill="${tier.color}"/>
     <text x="${x + size - 8}" y="${y + 16}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="11" font-weight="800" fill="${colors.background}" text-anchor="middle">${tier.tier}</text>
     
-    <!-- Label -->
+    <!-- label -->
     <text x="${x + halfSize}" y="${y + size + 14}" font-family="'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="10" font-weight="600" fill="${colors.secondaryText}" text-anchor="middle">${label}</text>
     
-    <!-- Value -->
+    <!-- value -->
     <text x="${x + halfSize}" y="${y + size + 28}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" font-weight="700" fill="${colors.primaryText}" text-anchor="middle">${value}</text>
   </g>`;
 }
 
-/**
- * Render the trophy row
- */
+// renders the trophy row
 export function renderTrophyRow({ x, y, width, height, data }) {
   const { colors } = currentTheme;
 
-  // Trophy icons (simple SVG paths)
+  // trophy icons
   const icons = {
     commits: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z',
     prs: 'M6 3a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm0 8a5 5 0 0 1-5-5V5a5 5 0 0 1 10 0v1a5 5 0 0 1-5 5zm12-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm0 14a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM6 19v-2a1 1 0 0 1 2 0v2a3 3 0 1 1-6 0v-2a1 1 0 0 1 2 0v2a1 1 0 0 0 2 0z',
@@ -453,7 +426,7 @@ export function renderTrophyRow({ x, y, width, height, data }) {
     followers: 'M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z',
   };
 
-  // Thresholds for each trophy type
+  // thresholds for each trophy type
   const thresholds = {
     commits: { s: 5000, a: 2000, b: 500, c: 100 },
     prs: { s: 500, a: 200, b: 50, c: 10 },
@@ -469,7 +442,7 @@ export function renderTrophyRow({ x, y, width, height, data }) {
   const totalWidth = (trophySize * totalTrophies) + (trophyGap * (totalTrophies - 1));
   const startX = x + (width - totalWidth) / 2;
 
-  // Build trophy data
+  // trophy data
   const trophies = [
     { key: 'commits', label: 'Commits', value: data.commits },
     { key: 'prs', label: 'PRs', value: data.prs },
@@ -479,35 +452,35 @@ export function renderTrophyRow({ x, y, width, height, data }) {
     { key: 'followers', label: 'Followers', value: data.followers },
   ];
 
-  // Card background
+  // card background
   const cardContent = `
   <g>
-    <!-- Card glow -->
+    <!-- card glow -->
     <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="${colors.glow}" opacity="0.03" filter="url(#cardGlow)"/>
     
-    <!-- Card background -->
+    <!-- card background -->
     <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="${colors.cardBackground}"/>
     
-    <!-- Inner gradient -->
+    <!-- inner gradient -->
     <rect x="${x}" y="${y}" width="${width}" height="${height}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="url(#mainGradient)" opacity="0.25"/>
     
-    <!-- Border -->
+    <!-- border -->
     <rect x="${x + 0.5}" y="${y + 0.5}" width="${width - 1}" height="${height - 1}" rx="${LAYOUT.cardRadius}" ry="${LAYOUT.cardRadius}" fill="none" stroke="${colors.borderLight}" stroke-width="1" opacity="0.4"/>
     
-    <!-- Title -->
+    <!-- title -->
     <text x="${x + width / 2}" y="${y + 24}" font-family="'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-size="13" font-weight="600" fill="${colors.secondaryText}" letter-spacing="0.5" text-anchor="middle">ACHIEVEMENT TROPHIES</text>
     
-    <!-- Title accent line -->
+    <!-- title accent line -->
     <rect x="${x + width / 2 - 40}" y="${y + 32}" width="80" height="2" rx="1" fill="url(#accentGradient)" opacity="0.6"/>
   </g>`;
 
-  // Render trophies
+  // renders trophies
   const trophyContent = trophies.map((trophy, index) => {
     const tier = getTrophyTier(trophy.value, thresholds[trophy.key]);
     const trophyX = startX + (index * (trophySize + trophyGap));
     const trophyY = y + 48;
 
-    // Format value for display
+    // format value for display
     const displayValue = trophy.value >= 1000
       ? (trophy.value / 1000).toFixed(1) + 'k'
       : trophy.value.toString();
@@ -527,9 +500,7 @@ export function renderTrophyRow({ x, y, width, height, data }) {
   return cardContent + trophyContent;
 }
 
-/**
- * Wrap content in SVG root element
- */
+// wrap content in SVG root element
 export function wrapSvg(content, width, height) {
   return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
 ${renderDefs()}
