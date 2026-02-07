@@ -4,9 +4,7 @@ import { githubCache } from '../utils/cache.js';
 
 const GITHUB_GRAPHQL_URL = 'https://api.github.com/graphql';
 
-/**
- * Get authorization headers for GraphQL API (token required)
- */
+/* authorization headers for GraphQL API*/
 function getHeaders() {
   const headers = {
     'Content-Type': 'application/json',
@@ -20,9 +18,7 @@ function getHeaders() {
   return headers;
 }
 
-/**
- * GraphQL query for contribution calendar and additional stats
- */
+/* GraphQL query for contribution calendar and additional stats */
 const CONTRIBUTION_QUERY = `
 query($username: String!) {
   user(login: $username) {
@@ -52,9 +48,7 @@ query($username: String!) {
 }
 `;
 
-/**
- * Fetch contribution data from GitHub GraphQL API
- */
+/* fetch contribution data from GitHub GraphQL API */
 async function fetchContributionData(username) {
   if (!process.env.GITHUB_TOKEN) {
     throw new Error('GITHUB_TOKEN required for contribution data');
@@ -69,10 +63,10 @@ async function fetchContributionData(username) {
     }),
   });
 
-  // Handle rate limits silently (no console noise in production)
+  // handles rate limits silently
   const rateLimitRemaining = response.headers.get('x-ratelimit-remaining');
   if (rateLimitRemaining && parseInt(rateLimitRemaining, 10) < 10) {
-    // Rate limit warning suppressed for production
+    // rate limit warning suppressed for production
   }
 
   if (!response.ok) {
@@ -91,9 +85,7 @@ async function fetchContributionData(username) {
   return json.data?.user;
 }
 
-/**
- * Flatten contribution calendar weeks into a sorted array of days
- */
+/* flatten contribution calendar weeks into a sorted array of days */
 function flattenContributionDays(calendar) {
   if (!calendar?.weeks) return [];
 
@@ -107,14 +99,12 @@ function flattenContributionDays(calendar) {
     }
   }
 
-  // Sort by date ascending
+  // sort by date ascending
   days.sort((a, b) => a.date.localeCompare(b.date));
   return days;
 }
 
-/**
- * Calculate current streak (consecutive days with contributions ending today or yesterday)
- */
+/* calculate current streak (consecutive days with contributions ending today or yesterday) */
 function calculateCurrentStreak(days) {
   if (days.length === 0) return 0;
 
@@ -124,28 +114,28 @@ function calculateCurrentStreak(days) {
   let streak = 0;
   let foundStart = false;
 
-  // Iterate backwards from most recent day
+  // backwards from most recent day
   for (let i = days.length - 1; i >= 0; i--) {
     const day = days[i];
 
-    // Start counting only if today or yesterday has contributions
+    // counts only if today or yesterday has contributions
     if (!foundStart) {
       if (day.date === today || day.date === yesterday) {
         if (day.count > 0) {
           foundStart = true;
           streak = 1;
         } else if (day.date === today) {
-          // Today has no contributions, check yesterday
+          // today has no contributions, check yesterday
           continue;
         } else {
-          // Yesterday has no contributions, streak is 0
+          // yesterday has no contributions, streak is 0
           break;
         }
       }
       continue;
     }
 
-    // Continue counting consecutive days
+    // continues counting consecutive days
     if (day.count > 0) {
       streak++;
     } else {
@@ -156,9 +146,7 @@ function calculateCurrentStreak(days) {
   return streak;
 }
 
-/**
- * Calculate longest streak in the contribution history
- */
+/* longest streak in the contribution history */
 function calculateLongestStreak(days) {
   if (days.length === 0) return 0;
 
@@ -177,16 +165,12 @@ function calculateLongestStreak(days) {
   return longest;
 }
 
-/**
- * Calculate total contribution days
- */
+/* calculate total contribution days */
 function calculateTotalContributionDays(days) {
   return days.filter((day) => day.count > 0).length;
 }
 
-/**
- * Normalize contribution data into a clean object
- */
+/* normalize contribution data into a clean object */
 function normalizeContributionData(userData) {
   const collection = userData?.contributionsCollection;
   const calendar = collection?.contributionCalendar;
@@ -197,7 +181,6 @@ function normalizeContributionData(userData) {
     currentStreak: calculateCurrentStreak(days),
     longestStreak: calculateLongestStreak(days),
     totalContributionDays: calculateTotalContributionDays(days),
-    // Additional stats
     totalCommits: collection?.totalCommitContributions || 0,
     totalPRs: collection?.totalPullRequestContributions || 0,
     totalIssues: collection?.totalIssueContributions || 0,
@@ -207,13 +190,11 @@ function normalizeContributionData(userData) {
   };
 }
 
-/**
- * Fetch and normalize contribution data for a user
- */
+/* fetch and normalize contribution data for a user */
 export async function getContributionData(username) {
   const cacheKey = `contributions:${username}`;
 
-  // Check cache first
+  // check cache first
   const cached = githubCache.get(cacheKey);
   if (cached) {
     return cached;
@@ -234,7 +215,7 @@ export async function getContributionData(username) {
       data: normalizeContributionData(userData),
     };
 
-    // Store in cache
+    // store in cache
     githubCache.set(cacheKey, result);
 
     return result;
