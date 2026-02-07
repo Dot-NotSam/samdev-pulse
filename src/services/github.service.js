@@ -4,9 +4,7 @@ import { githubCache } from '../utils/cache.js';
 
 const GITHUB_API_BASE = 'https://api.github.com';
 
-/**
- * Get authorization headers if token is available
- */
+/* function to get authorization headers once to use it everywhere */
 function getHeaders() {
   const headers = {
     'Accept': 'application/vnd.github.v3+json',
@@ -20,9 +18,7 @@ function getHeaders() {
   return headers;
 }
 
-/**
- * Fetch user profile from GitHub API
- */
+/* fetch user profile from GitHub API */
 async function fetchUserProfile(username) {
   const response = await fetch(`${GITHUB_API_BASE}/users/${username}`, {
     headers: getHeaders(),
@@ -35,9 +31,7 @@ async function fetchUserProfile(username) {
   return response.json();
 }
 
-/**
- * Fetch public repos for a user
- */
+/* fetch public repos for a user */
 async function fetchUserRepos(username) {
   const repos = [];
   let page = 1;
@@ -66,16 +60,12 @@ async function fetchUserRepos(username) {
   return repos;
 }
 
-/**
- * Calculate total stars from repos
- */
+/* total stars from repos */
 function calculateTotalStars(repos) {
   return repos.reduce((total, repo) => total + (repo.stargazers_count || 0), 0);
 }
 
-/**
- * Fetch avatar image and encode as data URI for safe embedding in SVG
- */
+/* fetch avatar image for embedding in SVG */
 async function fetchAvatarDataUri(avatarUrl) {
   if (!avatarUrl) {
     return null;
@@ -102,9 +92,7 @@ async function fetchAvatarDataUri(avatarUrl) {
   }
 }
 
-/**
- * Normalize GitHub data into a clean object
- */
+/* normalize all data into a clean object */
 function normalizeUserData(profile, repos, avatarDataUri) {
   const totalStars = calculateTotalStars(repos);
 
@@ -134,11 +122,9 @@ function normalizeUserData(profile, repos, avatarDataUri) {
   };
 }
 
-/**
- * Fetch and normalize all GitHub data for a user
- */
+/* fetch and normalize all gitHub data for a user */
 export async function getGitHubUserData(username) {
-  // Check cache first
+  // checks cache first
   const cached = githubCache.get(username);
   if (cached) {
     return cached;
@@ -155,7 +141,7 @@ export async function getGitHubUserData(username) {
       data: normalizeUserData(profile, repos, avatarDataUri),
     };
 
-    // Store in cache
+    // store in cache
     githubCache.set(username, result);
 
     return result;
