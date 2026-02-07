@@ -17,7 +17,7 @@
     ? window.location.origin
     : 'https://samdev-pulse.vercel.app';
 
-  /* Updates the preview image and markdown snippet based on form values */
+  /* updates the preview image and markdown snippet based on form values */
   function updatePreview() {
     const username = usernameInput.value.trim() || 'SamXop123';
     const leetcode = leetcodeInput.value.trim();
@@ -111,24 +111,20 @@
 
   /* this function initialize all event listeners */
   function init() {
-    // Update button listener
     if (updateBtn) {
       updateBtn.addEventListener('click', handleUpdateClick);
     }
 
-    // Copy button listener
     if (copyBtn) {
       copyBtn.addEventListener('click', handleCopyClick);
     }
 
-    // Set up smooth scrolling
     setupSmoothScrolling();
 
-    // Initial preview update
     updatePreview();
   }
 
-  // Run initialization when DOM is ready
+  // runs initialization when DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
