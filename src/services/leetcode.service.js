@@ -1,12 +1,10 @@
-// LeetCode Service - Fetch competitive coding stats
+// LeetCode Service
 
 import { githubCache } from '../utils/cache.js';
 
 const LEETCODE_GRAPHQL_URL = 'https://leetcode.com/graphql';
 
-/**
- * GraphQL query for LeetCode user stats
- */
+/* graphQL query for LC user stats */
 const USER_STATS_QUERY = `
 query getUserProfile($username: String!) {
   matchedUser(username: $username) {
@@ -29,9 +27,7 @@ query getUserProfile($username: String!) {
 }
 `;
 
-/**
- * Fetch LeetCode stats using GraphQL API
- */
+/* fetch LC stats using graphQL api */
 async function fetchLeetCodeStats(username) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000); // 8 second timeout
@@ -79,14 +75,12 @@ async function fetchLeetCodeStats(username) {
   }
 }
 
-/**
- * Normalize LeetCode data into a clean object
- */
+/* normalize LC data into a clean object */
 function normalizeLeetCodeData(data) {
   const user = data.matchedUser;
   const contestData = data.userContestRanking;
 
-  // Extract solved counts by difficulty
+  // extract solved counts by difficulty
   const submissions = user?.submitStats?.acSubmissionNum || [];
   const getCount = (difficulty) => {
     const item = submissions.find(s => s.difficulty === difficulty);
@@ -104,17 +98,14 @@ function normalizeLeetCodeData(data) {
     mediumSolved,
     hardSolved,
     ranking: user?.profile?.ranking || 0,
-    // Contest data (may be null if user hasn't participated)
+    // contest data
     contestRating: contestData?.rating ? Math.round(contestData.rating) : null,
     globalRanking: contestData?.globalRanking || null,
     contestsAttended: contestData?.attendedContestsCount || 0,
   };
 }
 
-/**
- * Fetch and normalize LeetCode data for a user
- * Returns graceful failure if API is down
- */
+/* fetch and normalize LC data for a user */
 export async function getLeetCodeData(username) {
   if (!username) {
     return {
@@ -139,12 +130,12 @@ export async function getLeetCodeData(username) {
       data: normalizeLeetCodeData(data),
     };
 
-    // Store in cache
+    // store in cache
     githubCache.set(cacheKey, result);
 
     return result;
   } catch (error) {
-    // Return graceful failure - don't block dashboard
+    // return failure without error so that dashboard do not block
     return {
       success: false,
       error: error.message || 'Failed to fetch LeetCode data',
