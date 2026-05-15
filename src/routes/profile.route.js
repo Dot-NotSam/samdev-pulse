@@ -63,8 +63,11 @@ router.get('/', async (req, res) => {
 
   // check if LeetCode is explicitly disabled
   const leetcodeDisabled = leetcode === 'false';
-  const shouldRenderLeetCode = Boolean(leetcode && !leetcodeDisabled);
- const hideTrophies = hide_trophies === 'true';
+ const shouldRenderLeetCode = Boolean(leetcode && !leetcodeDisabled);
+
+const showRepositoryStats = !shouldRenderLeetCode;
+
+const hideTrophies = hide_trophies === 'true';
 
   // alignment
   const validAlignments = ['left', 'center', 'right'];
@@ -214,14 +217,16 @@ const height = hideTrophies
     renderDonutChart({ x: LAYOUT.padding + chartWidth + LAYOUT.cardGap, y: row2Y, width: row2CardWidth, height: row2Height, title: 'Top Languages', data: topLanguages }),
 
     // Row 3: trophy row
-    !hideTrophies &&
-renderTrophyRow({
-  x: LAYOUT.padding,
-  y: row3Y,
-  width: fullWidth,
-  height: row3Height,
-  data: trophyData
-}),
+
+hideTrophies
+  ? ''
+  : renderTrophyRow({
+      x: LAYOUT.padding,
+      y: row3Y,
+      width: fullWidth,
+      height: row3Height,
+      data: trophyData
+    }),
   ].join('\n');
 
   const svg = wrapSvg(content, width, height);
